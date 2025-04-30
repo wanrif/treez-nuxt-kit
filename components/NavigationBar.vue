@@ -3,7 +3,7 @@ const localePath = useLocalePath()
 const isOpen = ref(false)
 const mounted = ref(false)
 const { $authClient } = useNuxtApp()
-const { data: session, isPending } = await $authClient.useSession(useCsrfFetch)
+const session = $authClient.useSession()
 const toast = useToast()
 
 interface NavLink {
@@ -41,7 +41,7 @@ const handleSignOut = async () => {
 const linkList = computed<NavLink[]>(() => {
   const links: NavLink[] = [{ to: localePath('/'), text: 'navbar_home', icon: 'ph:house' }]
 
-  if (session?.value) {
+  if (session?.value.data?.user) {
     links.push(
       { to: localePath('/dashboard'), text: 'navbar_dashboard', icon: 'ph:gauge' },
       {
@@ -90,7 +90,7 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
 
         <!-- Desktop Navigation -->
         <div class="hidden items-center gap-x-8 md:flex">
-          <template v-if="mounted && !isPending">
+          <template v-if="mounted && !session.isPending">
             <ULink
               v-for="link in linkList"
               :key="link.to"

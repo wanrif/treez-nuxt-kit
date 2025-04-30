@@ -74,38 +74,31 @@ export const useAuthStore = defineStore('auth', {
         throw err
       }
     },
-    async checkSession() {
-      this.loading = true
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        // In a real app, validate token/session here
-        const savedUser = this.$state.user
-        if (savedUser) {
-          this.user = JSON.parse(JSON.stringify(savedUser))
-        }
-      } finally {
-        this.loading = false
-      }
-    },
     async forgotPassword(email: string) {
-      const { $trpc } = useNuxtApp()
+      const { $authClient } = useNuxtApp()
       this.error = null
       try {
-        await $trpc.auth.forgotPassword.mutate({ email })
+        await $authClient.forgetPassword({
+          email,
+          redirectTo: '/reset-password',
+        })
       } catch (error: unknown) {
+        console.error('Error sending reset password email:', error)
         const err = error as ApiError
         this.error = err.message
         throw err
       }
     },
     async resetPassword(token: string, newPassword: string) {
-      const { $trpc } = useNuxtApp()
+      const { $authClient } = useNuxtApp()
       this.error = null
       try {
-        await $trpc.auth.resetPassword.mutate({
+        const { error } = await $authClient.resetPassword({
+          newPassword,
           token,
-          password: newPassword,
         })
+
+        if (error) throw new Error(error?.message, { cause: error })
       } catch (error: unknown) {
         const err = error as ApiError
         this.error = err.message

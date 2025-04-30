@@ -2,11 +2,11 @@ import { inferAdditionalFields } from 'better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/vue'
 
 export default defineNuxtPlugin((_nuxtApp) => {
+  const { csrf } = useCsrf()
   const authClient = createAuthClient({
     fetchOptions: {
-      onRequest(context) {
-        const { csrf } = useCsrf()
-        context.headers.set('x-csrf-token', csrf)
+      headers: {
+        'x-csrf-token': csrf,
       },
       onError: async (context) => {
         const { response } = context

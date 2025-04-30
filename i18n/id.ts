@@ -164,6 +164,7 @@ export default {
   reset_password_description: 'Masukkan kata sandi baru Anda di bawah ini.',
   reset_password: 'Atur Ulang Kata Sandi',
   reset_password_failed: 'Gagal mengatur ulang kata sandi. Silakan coba lagi.',
+  reset_password_failed_invalid: 'Gagal mengatur ulang kata sandi: {reason}',
   password_reset_success: 'Kata Sandi Berhasil Diatur Ulang',
   redirecting_to_login: 'Mengalihkan ke halaman masuk...',
 

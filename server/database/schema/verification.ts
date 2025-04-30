@@ -7,4 +7,6 @@ export const verificationTable = mysqlTable('verifications', {
   identifier: varchar('identifier', { length: 255 }).notNull(),
   value: varchar('value', { length: 255 }).notNull(),
   expires_at: varchar('expires_at', { length: 255 }),
+  created_at: varchar('created_at', { length: 255 }),
+  updated_at: varchar('updated_at', { length: 255 }),
 })

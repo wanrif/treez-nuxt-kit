@@ -28,6 +28,9 @@ onMounted(() => {
   <div class="flex min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8">
     <div class="w-full max-w-md space-y-8">
       <div class="text-center">
+        <NuxtLink :to="localePath('/')" class="inline-block">
+          <Icon class="!size-20 text-primary-600 dark:text-primary-400" name="tabler:topology-star-ring-3" />
+        </NuxtLink>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ t('register') }}</h1>
         <p class="mt-2 text-gray-600 dark:text-gray-300">{{ t('register_welcome') }}</p>
       </div>

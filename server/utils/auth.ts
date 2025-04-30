@@ -1,9 +1,13 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 
+import { render } from '@vue-email/render'
+
+import ResetPasswordTemplate from '~/server/email/resetPasswordTemplate.vue'
 import { useDrizzle } from '~/server/utils/drizzle'
 
 import { accountTable, sessionsTable, usersTable, verificationTable } from '../database/schema'
+import { sendEmail } from './email'
 
 const db = useDrizzle()
 export const auth = betterAuth({
@@ -13,7 +17,7 @@ export const auth = betterAuth({
       accounts: accountTable,
       sessions: sessionsTable,
       users: usersTable,
-      verification: verificationTable,
+      verifications: verificationTable,
     },
     usePlural: true,
   }),
@@ -27,7 +31,25 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    sendResetPassword: async ({ user, url, token }, _request) => {
+      const html = await render(
+        ResetPasswordTemplate,
+        {
+          title: 'Reset Your Password',
+          url: `${url}?token=${token}`,
+        },
+        {
+          pretty: true,
+        }
+      )
+      await sendEmail({
+        to: user.email,
+        subject: 'Reset Your Password',
+        html,
+      })
+    },
   },
+  trustedOrigins: [],
   account: {
     fields: {
       password: 'password',
@@ -79,6 +101,10 @@ export const auth = betterAuth({
       id: 'id',
       userId: 'user_id',
       expiresAt: 'expires_at',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      identifier: 'identifier',
+      value: 'value',
     },
   },
 })

@@ -1,3 +1,5 @@
+import vue from '@vitejs/plugin-vue'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -157,6 +159,13 @@ export default defineNuxtConfig({
     encryptionSalt: '',
     public: {
       // other public config here
+    },
+  },
+  nitro: {
+    rollupConfig: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      plugins: [vue()],
     },
   },
   typescript: {

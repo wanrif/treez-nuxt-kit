@@ -163,6 +163,7 @@ export default {
   reset_password_description: 'Enter your new password below.',
   reset_password: 'Reset Password',
   reset_password_failed: 'Failed to reset password. Please try again.',
+  reset_password_failed_invalid: 'Failed to reset password: {reason}',
   password_reset_success: 'Password Reset Successful',
   redirecting_to_login: 'Redirecting to login page...',
 

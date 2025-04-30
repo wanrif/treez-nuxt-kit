@@ -1,8 +1,8 @@
 export default defineNuxtRouteMiddleware(async (_to, _from) => {
   const { $authClient } = useNuxtApp()
-  const { data: session } = await $authClient.useSession(useCsrfFetch)
+  const session = $authClient.useSession()
 
-  if (session?.value) {
+  if (session?.value.data) {
     return navigateTo('/dashboard')
   }
 })
