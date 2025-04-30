@@ -14,28 +14,20 @@ interface NavLink {
 }
 
 const handleSignOut = async () => {
-  try {
-    await $authClient.signOut({
-      fetchOptions: {
-        onSuccess: async () => {
-          toast.add({ title: 'Signed out successfully' })
-          await navigateTo('/')
-        },
-        onError: (error) => {
-          toast.add({ title: 'Sign out failed', description: error?.error?.message || 'Unknown error' })
-        },
+  await $authClient.signOut({
+    fetchOptions: {
+      onSuccess: async () => {
+        toast.add({ title: 'Signed out successfully' })
+        await navigateTo('/')
       },
-    })
-  } catch (error: unknown) {
-    let description = 'Please try again.'
-    if (error instanceof Error) {
-      description = error.message
-    }
-    toast.add({
-      title: 'An unexpected error occurred during sign out',
-      description,
-    })
-  }
+      onError: (error) => {
+        toast.add({
+          title: 'An unexpected error occurred during sign out',
+          description: error?.error?.message || 'Unknown error',
+        })
+      },
+    },
+  })
 }
 
 const linkList = computed<NavLink[]>(() => {

@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-export const sendEmail = async ({
+export default async function sendEmail({
   html,
   subject = 'Welcome',
   to = '',
@@ -21,17 +21,21 @@ export const sendEmail = async ({
   subject?: string
   to?: string
   request?: Request
-}) => {
+}) {
   if (!to) {
-    console.error('Email recipient (to) is missing.')
-    return // Or throw an error
+    logger.log({
+      level: 'error',
+      code: 'VALIDATION_ERROR',
+      message: 'Email recipient (to) is missing.',
+    })
+    throw new Error('Email recipient (to) is missing.')
   }
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER, // sender address
-    to, // list of receivers
-    subject, // Subject line
-    html, // html body
+    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    to,
+    subject,
+    html,
   }
 
   try {
@@ -43,7 +47,11 @@ export const sendEmail = async ({
       message: `Email sent to: ${to} with subject: ${subject}. Message ID: ${info.messageId}`,
     })
   } catch (error) {
-    console.error(`Error sending email to ${to}:`, error)
-    // Handle error appropriately, maybe re-throw or log more details
+    logger.log({
+      level: 'error',
+      code: 'EMAIL_ERROR',
+      message: `Failed to send email to ${to}: ${error}`,
+    })
+    throw new Error(`Failed to send email: ${error}`)
   }
 }

@@ -2,8 +2,8 @@ import 'dotenv/config'
 import { defineConfig } from 'drizzle-kit'
 
 export default defineConfig({
-  out: './server/database/migrations',
-  schema: './server/database/schema/index.ts',
+  out: './database/migrations',
+  schema: './database/schema/index.ts',
   dialect: 'mysql',
   dbCredentials: {
     host: process.env.NUXT_MYSQL_HOST || 'localhost',

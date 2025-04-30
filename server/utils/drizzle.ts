@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { drizzle } from 'drizzle-orm/mysql2'
 import mysql from 'mysql2/promise'
 
-import schema from '~/server/database/schema'
+import schema from '~/database/schema'
 
 import { handleError, logger } from './response'
 

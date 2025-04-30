@@ -15,8 +15,7 @@ import {
   INVALID_TOKEN,
   TOKEN_EXPIRED,
 } from '~/constant/jwt'
-import { rolesTable } from '~/server/database/schema/role'
-import { usersTable } from '~/server/database/schema/user'
+import { rolesTable, usersTable } from '~/database/schema'
 import type { IUser } from '~/types'
 import { generateTransactionId } from '~/utils/commonHelper.ts'
 

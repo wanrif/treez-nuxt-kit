@@ -3,11 +3,11 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 
 import { render } from '@vue-email/render'
 
+import { accountTable, sessionsTable, usersTable, verificationTable } from '~/database/schema'
 import ResetPasswordTemplate from '~/server/email/resetPasswordTemplate.vue'
 import { useDrizzle } from '~/server/utils/drizzle'
 
-import { accountTable, sessionsTable, usersTable, verificationTable } from '../database/schema'
-import { sendEmail } from './email'
+import sendEmail from './email'
 
 const db = useDrizzle()
 export const auth = betterAuth({
@@ -31,6 +31,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    resetPasswordTokenExpiresIn: 3600, // 1 hour
     sendResetPassword: async ({ user, url, token }, _request) => {
       const html = await render(
         ResetPasswordTemplate,

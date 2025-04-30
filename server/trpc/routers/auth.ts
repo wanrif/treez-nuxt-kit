@@ -9,8 +9,7 @@ import {
   INVALID_REFRESH_TOKEN,
   INVALID_USER_REFRESH_TOKEN,
 } from '~/constant/jwt'
-import { rolesTable } from '~/server/database/schema/role'
-import { usersTable } from '~/server/database/schema/user'
+import { rolesTable, usersTable } from '~/database/schema'
 import { useDrizzle } from '~/server/utils/drizzle'
 import {
   ACCESS_TOKEN_EXPIRATION_SEC,
