@@ -1,7 +1,7 @@
 import { inferAdditionalFields } from 'better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/vue'
 
-export const authServer = createAuthClient({
+export const authClient = createAuthClient({
   fetchOptions: {
     onRequest(context) {
       const { csrf } = useCsrf()

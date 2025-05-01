@@ -33,6 +33,8 @@
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue-email/components": "^0.0.21",
     "@vue-email/render": "^0.0.9",
+    "@vueuse/core": "^13.1.0",
+    "@vueuse/nuxt": "^13.1.0",
     "better-auth": "^1.2.7",
     "drizzle-orm": "^0.41.0",
     "eslint": "^9.25.1",

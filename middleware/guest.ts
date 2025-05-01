@@ -1,8 +1,10 @@
-export default defineNuxtRouteMiddleware(async (_to, _from) => {
+export default defineNuxtRouteMiddleware(async (to, _from) => {
   const { $authClient } = useNuxtApp()
-  const session = $authClient.useSession()
 
-  if (session?.value.data) {
-    return navigateTo('/dashboard')
+  const { data: session } = await $authClient.useSession(useCsrfFetch)
+  if (session.value) {
+    if (to.path === '/login') {
+      return navigateTo('/dashboard')
+    }
   }
 })

@@ -1,14 +1,13 @@
 import nodemailer from 'nodemailer'
 
 // Configure nodemailer transporter
-// You should use environment variables for sensitive information
 const transporter = nodemailer.createTransport({
-  host: process.env.NUXT_EMAIL_HOST, // e.g., 'smtp.example.com'
+  host: process.env.NUXT_EMAIL_HOST,
   port: Number(process.env.NUXT_EMAIL_PORT || 587), // e.g., 587 or 465
   // secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
   auth: {
-    user: process.env.NUXT_EMAIL_USER, // your email address
-    pass: process.env.NUXT_EMAIL_PASSWORD, // your email password or app password
+    user: process.env.NUXT_EMAIL_USER,
+    pass: process.env.NUXT_EMAIL_PASSWORD,
   },
 })
 
