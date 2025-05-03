@@ -23,7 +23,8 @@ export default withNuxt({
     '@stylistic/linebreak-style': ['error', 'unix'],
     '@stylistic/semi': 'off',
     '@stylistic/quotes': 'off',
-    '@stylistic/indent': ['error', 2],
+    // Disable stylistic indent rule as Prettier handles it
+    '@stylistic/indent': 'off',
     'vue/html-self-closing': [
       'warn',
       {
@@ -36,23 +37,8 @@ export default withNuxt({
         math: 'always',
       },
     ],
-    'prettier-vue/prettier': [
-      'error',
-      {
-        // Override all options of `prettier` here
-        // @see https://prettier.io/docs/en/options.html
-        semi: false,
-        singleQuote: true,
-        tabWidth: 2,
-        trailingComma: 'es5',
-        printWidth: 120,
-        bracketSpacing: true,
-        arrowParens: 'always',
-        endOfLine: 'lf',
-        singleAttributePerLine: false,
-        vueIndentScriptAndStyle: false,
-      },
-    ],
+    // Rely on .prettierrc via settings
+    'prettier-vue/prettier': 'error',
   },
   settings: {
     'prettier-vue': {

@@ -1,3 +1,13 @@
+import type { UserWithRole } from 'better-auth/plugins'
+
+export interface AuthUser extends UserWithRole {
+  // Add the additional fields explicitly
+  phone: string | null
+  location: string | null
+  website: string | null
+  bio: string | null
+}
+
 export interface IUser {
   id: string
   email: string

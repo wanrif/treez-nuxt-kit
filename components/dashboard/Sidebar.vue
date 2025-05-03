@@ -20,8 +20,8 @@ onMounted(() => {
 <template>
   <nav
     :class="[
-      'fixed z-50 h-full border-r border-gray-200 shadow-lg backdrop-blur-md dark:border-gray-700',
-      'bg-white/80 dark:bg-gray-800/80',
+      'fixed z-50 h-full border-r border-neutral-200 shadow-lg backdrop-blur-md dark:border-neutral-700',
+      'bg-white/80 dark:bg-neutral-800/80',
       'md:translate-x-0',
       isSidebarExpanded ? 'w-64' : 'w-20',
       isMobileMenuOpen && isMobile ? 'w-64 translate-x-0' : isMobile ? '-translate-x-full' : 'translate-x-0',
@@ -42,11 +42,11 @@ onMounted(() => {
       </div>
       <button
         v-show="!isMobile"
-        class="flex flex-shrink-0 items-center justify-center rounded-lg p-2 transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-700/50"
+        class="flex flex-shrink-0 items-center justify-center rounded-lg p-2 transition-all duration-300 ease-in-out hover:bg-neutral-100 dark:hover:bg-neutral-700/50"
         :class="{ 'rotate-180': !isSidebarExpanded }"
         @click="$emit('toggle-sidebar')"
       >
-        <Icon name="tabler:chevron-left" class="h-5 w-5 text-gray-600 dark:text-gray-300" />
+        <Icon name="tabler:chevron-left" class="h-5 w-5 text-neutral-600 dark:text-neutral-300" />
       </button>
     </div>
 

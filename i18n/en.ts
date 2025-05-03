@@ -179,4 +179,5 @@ export default {
   validation_confirm_password_required: 'Please confirm your password',
   validation_website_invalid: 'Invalid website format',
   validation_bio_max: 'Bio cannot exceed 250 characters',
+  validation_phone_length: 'Phone number must be at least 10 characters',
 }

@@ -155,11 +155,19 @@ export default defineNuxtConfig({
     mysqlUser: '',
     mysqlPassword: '',
     mysqlDatabase: '',
+    redisPort: '',
+    redisHost: '',
+    redisUsername: '',
+    redisPassword: '',
+    redisDb: 0,
     encryptionAlgorithm: '',
     encryptionPassword: '',
     encryptionSalt: '',
     public: {
-      // other public config here
+      auth: {
+        redirectUserTo: '/dashboard',
+        redirectGuestTo: '/',
+      },
     },
   },
   nitro: {

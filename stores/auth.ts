@@ -7,7 +7,7 @@ import type {
   IUser,
   LoginCredentials,
   RegisterCredentials,
-  // UpdateProfileCredentials,
+  UpdateProfileCredentials,
 } from '~/types'
 
 export const useAuthStore = defineStore('auth', {
@@ -23,12 +23,11 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async login(credentials: LoginCredentials) {
-      const { $authClient } = useNuxtApp()
-
       this.error = null
       this.loading = true
       try {
-        const { data, error } = await $authClient.signIn.email({
+        const { signIn } = useAuth()
+        const { data, error } = await signIn.email({
           email: credentials.email,
           password: credentials.password,
         })
@@ -45,11 +44,10 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async register(credentials: RegisterCredentials) {
-      const { $authClient } = useNuxtApp()
-
       this.error = null
       try {
-        const { error } = await $authClient.signUp.email({
+        const { signUp } = useAuth()
+        const { error } = await signUp.email({
           name: credentials.name,
           email: credentials.email,
           password: credentials.password,
@@ -75,10 +73,10 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async forgotPassword(email: string) {
-      const { $authClient } = useNuxtApp()
       this.error = null
       try {
-        await $authClient.forgetPassword({
+        const { client } = useAuth()
+        await client.forgetPassword({
           email,
           redirectTo: '/reset-password',
         })
@@ -90,10 +88,10 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async resetPassword(token: string, newPassword: string) {
-      const { $authClient } = useNuxtApp()
       this.error = null
       try {
-        const { error } = await $authClient.resetPassword({
+        const { client } = useAuth()
+        const { error } = await client.resetPassword({
           newPassword,
           token,
         })
@@ -129,23 +127,23 @@ export const useAuthStore = defineStore('auth', {
         throw err
       }
     },
-    // async updateProfile(profile: UpdateProfileCredentials) {
-    //   const { $trpc } = useNuxtApp()
-    //   this.error = null
-    //   try {
-    //     profile.id = this.user?.id
-    //     const response = await $trpc.user.update.mutate(profile)
-    //     if (!response.data?.user) {
-    //       throw new Error('No user data in response')
-    //     }
-    //     this.user = response.data.user as IUser
-    //     return response
-    //   } catch (error: unknown) {
-    //     const err = error as ApiError
-    //     this.error = err.message
-    //     throw err
-    //   }
-    // },
+    async updateProfile(profile: UpdateProfileCredentials) {
+      const { $trpc } = useNuxtApp()
+      this.error = null
+      try {
+        profile.id = this.user?.id
+        // const response = await $trpc.user.update.mutate(profile)
+        // if (!response.data?.user) {
+        //   throw new Error('No user data in response')
+        // }
+        // this.user = response.data.user as IUser
+        // return response
+      } catch (error: unknown) {
+        const err = error as ApiError
+        this.error = err.message
+        throw err
+      }
+    },
   },
 
   persist: {

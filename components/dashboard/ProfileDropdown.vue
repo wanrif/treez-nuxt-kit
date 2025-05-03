@@ -1,16 +1,7 @@
 <script setup lang="ts">
 import type { ProfileItem } from '~/types/menu'
 
-const props = defineProps({
-  signOut: {
-    type: Function,
-    required: true,
-  },
-  session: {
-    type: Object,
-    required: true,
-  },
-})
+const { signOut, user } = useAuth()
 
 const { t } = useI18n()
 const localePath = useLocalePath()
@@ -47,7 +38,10 @@ const profileItems = computed<ProfileItem[]>(() => [
   {
     label: t('logout'),
     icon: 'tabler:logout',
-    action: () => props.signOut(),
+    action: () =>
+      signOut({
+        redirectTo: localePath('/login'),
+      }),
   },
 ])
 </script>
@@ -62,7 +56,7 @@ const profileItems = computed<ProfileItem[]>(() => [
       <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600">
         <span class="text-sm font-medium text-white">
           {{
-            session?.user?.name
+            user?.name
               ?.split(' ')
               .map((n: string) => n[0])
               .join('')
@@ -71,7 +65,7 @@ const profileItems = computed<ProfileItem[]>(() => [
         </span>
       </div>
       <span class="text-sm font-medium text-gray-600 dark:text-gray-300">
-        {{ session?.user?.name || 'John Doe' }}
+        {{ user?.name || 'John Doe' }}
       </span>
       <Icon
         name="tabler:chevron-down"
@@ -96,10 +90,10 @@ const profileItems = computed<ProfileItem[]>(() => [
       >
         <div class="border-b border-gray-200 p-4 dark:border-gray-700">
           <p class="text-sm font-medium text-gray-900 dark:text-white">
-            {{ session?.user?.name || 'John Doe' }}
+            {{ user?.name || 'John Doe' }}
           </p>
           <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ session?.user?.email || 'john@example.com' }}
+            {{ user?.email || 'john@example.com' }}
           </p>
         </div>
         <div class="py-2">

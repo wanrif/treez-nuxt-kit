@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { MenuItem } from '~/types/menu'
 
-const { $authClient } = useNuxtApp()
-const { data: session } = await $authClient.useSession(useCsrfFetch)
+const { user } = useAuth()
 const { t } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
@@ -18,7 +17,7 @@ watch(
 
 const MENU_ITEMS: MenuItem[] = [
   { label: 'dashboard', icon: 'tabler:layout-dashboard', to: '/dashboard' },
-  { label: 'users', icon: 'tabler:users', to: '/dashboard/users' },
+  { label: 'users', icon: 'tabler:users', to: '/dashboard/users', adminOnly: true },
   {
     label: 'products',
     icon: 'tabler:package',
@@ -32,7 +31,9 @@ const MENU_ITEMS: MenuItem[] = [
 ]
 
 const menuItems = computed(() =>
-  MENU_ITEMS.map((item) => ({
+  MENU_ITEMS.filter((item) => {
+    return !item.adminOnly || user.value?.role === 'admin'
+  }).map((item) => ({
     ...item,
     label: t(item.label),
     to: item.to ? localePath(item.to) : undefined,
@@ -41,86 +42,85 @@ const menuItems = computed(() =>
 )
 
 onMounted(async () => {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  // Ensure auth state is potentially checked here or via middleware before showing content
+  // User data should be available via useAuth after initial fetch or middleware check
+  await nextTick() // Ensure reactivity updates if user data loads slightly later
   showContent.value = true
 })
 </script>
 
 <template>
-  <LoadingSpinner size="lg" :show="!showContent" />
-
   <div
-    v-if="session?.user && showContent"
-    class="relative min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+    class="relative min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800"
   >
-    <!-- Mobile Menu Overlay -->
-    <Transition name="fade">
-      <div
-        v-show="isMobileMenuOpen"
-        class="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm md:hidden"
-        @click="toggleMobileMenu"
+    <!-- Loading Spinner shown initially -->
+    <LoadingSpinner size="lg" :show="!showContent" />
+
+    <!-- Use v-show to hide content visually while loading, keeping the DOM structure -->
+    <!-- Use 'contents' display property to avoid adding an extra layout div -->
+    <div v-show="showContent" class="contents">
+      <!-- Mobile Menu Overlay -->
+      <Transition name="fade">
+        <div
+          v-show="isMobileMenuOpen"
+          class="fixed inset-0 z-40 bg-neutral-900/50 backdrop-blur-sm md:hidden"
+          @click="toggleMobileMenu"
+        />
+      </Transition>
+
+      <!-- Sidebar Navigation -->
+      <DashboardSidebar
+        :is-sidebar-expanded="isSidebarExpanded"
+        :is-mobile-menu-open="isMobileMenuOpen"
+        :is-mobile="isMobile"
+        :active-submenu="activeSubmenu"
+        :menu-items="menuItems"
+        @toggle-sidebar="toggleSidebar"
+        @toggle-mobile-menu="toggleMobileMenu"
+        @toggle-submenu="toggleSubmenu"
       />
-    </Transition>
 
-    <!-- Sidebar Navigation -->
-    <DashboardSidebar
-      :is-sidebar-expanded="isSidebarExpanded"
-      :is-mobile-menu-open="isMobileMenuOpen"
-      :is-mobile="isMobile"
-      :active-submenu="activeSubmenu"
-      :menu-items="menuItems"
-      @toggle-sidebar="toggleSidebar"
-      @toggle-mobile-menu="toggleMobileMenu"
-      @toggle-submenu="toggleSubmenu"
-    />
-
-    <!-- Main Content -->
-    <div
-      :class="['transition-all duration-300', !isMobile && 'md:ml-20', { 'md:ml-64': !isMobile && isSidebarExpanded }]"
-    >
-      <!-- Header -->
-      <header
-        class="sticky top-0 z-30 border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/80"
+      <!-- Main Content -->
+      <div
+        :class="[
+          'transition-all duration-300',
+          !isMobile && 'md:ml-20',
+          { 'md:ml-64': !isMobile && isSidebarExpanded },
+        ]"
       >
-        <div class="px-4 py-4 md:px-6">
-          <div class="flex items-center justify-between">
-            <!-- Mobile Menu Button -->
-            <button
-              class="flex items-center justify-center rounded-lg p-2 hover:bg-gray-100 md:hidden dark:hover:bg-gray-700/50"
-              @click="toggleMobileMenu"
-            >
-              <Icon name="tabler:menu-2" class="h-6 w-6 text-gray-600 dark:text-gray-300" />
-            </button>
+        <!-- Header -->
+        <header
+          class="sticky top-0 z-30 border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-700 dark:bg-neutral-800/80"
+        >
+          <div class="px-4 py-4 md:px-6">
+            <div class="flex items-center justify-between">
+              <!-- Mobile Menu Button -->
+              <button
+                class="flex items-center justify-center rounded-lg p-2 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-700/50"
+                @click="toggleMobileMenu"
+              >
+                <Icon name="tabler:menu-2" class="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
+              </button>
 
-            <h2
-              class="hidden bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-lg font-semibold text-transparent sm:block"
-            >
-              {{ t('welcome') }}
-            </h2>
+              <h2
+                class="hidden bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-lg font-semibold text-transparent sm:block"
+              >
+                {{ t('welcome') }}
+              </h2>
 
-            <div class="flex items-center space-x-4">
-              <ThemeSwitcher />
-              <DashboardProfileDropdown
-                :sign-out="
-                  () =>
-                    $authClient.signOut({
-                      fetchOptions: {
-                        onSuccess: () => {
-                          navigateTo(localePath('/login'), { replace: true })
-                        },
-                      },
-                    })
-                "
-                :session="session"
-              />
+              <div class="flex items-center space-x-4">
+                <ThemeSwitcher />
+                <DashboardProfileDropdown />
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main class="p-4 md:p-6">
-        <slot />
-      </main>
+        <main class="p-4 md:p-6">
+          <slot />
+          <!-- Slot is now always rendered within the layout structure -->
+        </main>
+      </div>
     </div>
   </div>
 </template>
@@ -129,7 +129,7 @@ onMounted(async () => {
 @reference "tailwindcss";
 
 .router-link-active {
-  @apply bg-gray-50 dark:bg-gray-700/50;
+  @apply bg-neutral-50 dark:bg-neutral-700/50;
 }
 
 .router-link-active.router-link-exact-active {

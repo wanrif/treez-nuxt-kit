@@ -1,7 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'auth',
-  middleware: ['guest'],
+  auth: {
+    only: 'guest',
+  },
 })
 
 useHead({
@@ -15,6 +17,7 @@ useHead({
 })
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 const route = useRoute()
 const token = route.query.token as string
 const { fields, errors, isSubmitting, meta, error, success, submit } = useResetPasswordForm(token)
@@ -29,6 +32,9 @@ onMounted(() => {
   <div class="flex min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8">
     <div class="flex w-full max-w-md flex-col gap-8">
       <div class="text-center">
+        <NuxtLink :to="localePath('/')" class="inline-block">
+          <Icon class="!size-20 text-primary-600 dark:text-primary-400" name="tabler:topology-star-ring-3" />
+        </NuxtLink>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
           {{ t('reset_password_title') }}
         </h1>

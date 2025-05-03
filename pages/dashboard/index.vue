@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['auth'],
+  auth: {
+    only: 'user',
+    redirectGuestTo: '/login',
+  },
 })
 
 useHead({

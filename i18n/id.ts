@@ -180,4 +180,5 @@ export default {
   validation_confirm_password_required: 'Harap konfirmasi kata sandi Anda',
   validation_website_invalid: 'Format situs web tidak valid',
   validation_bio_max: 'Bio tidak boleh melebihi 250 karakter',
+  validation_phone_length: 'Nomor telepon minimal 10 karakter',
 }

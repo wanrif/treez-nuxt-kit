@@ -7,6 +7,7 @@ export interface MenuItem {
     to: string
     icon: string
   }[]
+  adminOnly?: boolean
 }
 
 export interface ProfileItem {

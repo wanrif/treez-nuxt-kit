@@ -13,6 +13,7 @@ export const sessionsTable = mysqlTable(
     expires_at: timestamp('expires_at').notNull(),
     created_at: timestamp('created_at').notNull().defaultNow(),
     updated_at: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+    impersonatedBy: varchar('impersonatedBy', { length: 32 }),
   },
-  (table) => [index('user_id_idx').on(table.user_id), index('ip_address_idx').on(table.ip_address)]
+  (table) => [index('user_id_idx').on(table.user_id), index('token_idx').on(table.token)]
 )

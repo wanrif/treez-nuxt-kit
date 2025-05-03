@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 const localePath = useLocalePath()
+const { signOut, loggedIn } = useAuth()
 const isOpen = ref(false)
 const mounted = ref(false)
-const { $authClient } = useNuxtApp()
-const session = $authClient.useSession()
-const toast = useToast()
 
 interface NavLink {
   to: string
@@ -14,30 +12,19 @@ interface NavLink {
 }
 
 const handleSignOut = async () => {
-  await $authClient.signOut({
-    fetchOptions: {
-      onSuccess: async () => {
-        toast.add({ title: 'Signed out successfully' })
-        await navigateTo('/')
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'An unexpected error occurred during sign out',
-          description: error?.error?.message || 'Unknown error',
-        })
-      },
-    },
+  await signOut({
+    redirectTo: localePath('/login'),
   })
 }
 
 const linkList = computed<NavLink[]>(() => {
   const links: NavLink[] = [{ to: localePath('/'), text: 'navbar_home', icon: 'ph:house' }]
 
-  if (session?.value.data?.user) {
+  if (loggedIn.value) {
     links.push(
       { to: localePath('/dashboard'), text: 'navbar_dashboard', icon: 'ph:gauge' },
       {
-        to: localePath('/logout'),
+        to: '',
         text: 'navbar_logout',
         icon: 'ph:sign-out',
         onClick: handleSignOut,
@@ -82,7 +69,7 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
 
         <!-- Desktop Navigation -->
         <div class="hidden items-center gap-x-8 md:flex">
-          <template v-if="mounted && !session.isPending">
+          <template v-if="mounted">
             <ULink
               v-for="link in linkList"
               :key="link.to"

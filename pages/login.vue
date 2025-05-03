@@ -1,7 +1,9 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'auth',
-  middleware: ['guest'],
+  auth: {
+    only: 'guest',
+  },
 })
 
 useHead({

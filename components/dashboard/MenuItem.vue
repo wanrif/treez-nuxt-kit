@@ -119,8 +119,6 @@ onClickOutside(itemRef, () => {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
-
 .overflow-hidden {
   overflow: hidden;
   will-change: height, opacity;
@@ -157,6 +155,7 @@ onClickOutside(itemRef, () => {
   transition: transform 0.3s ease;
 }
 
+@reference "../../assets/css/main.css";
 /* Add tooltip styles */
 .group-hover\/menu\:opacity-100 {
   @apply shadow-lg;

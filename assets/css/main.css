@@ -38,56 +38,48 @@
     'Noto Color Emoji';
   --font-bungee:
     'Bungee', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
 
-  --color-tuatara: #353535;
-  --color-tuatara-50: #f6f6f6;
-  --color-tuatara-100: #e7e7e7;
-  --color-tuatara-200: #d1d1d1;
-  --color-tuatara-300: #b0b0b0;
-  --color-tuatara-400: #888888;
-  --color-tuatara-500: #6d6d6d;
-  --color-tuatara-600: #5d5d5d;
-  --color-tuatara-700: #4f4f4f;
-  --color-tuatara-800: #454545;
-  --color-tuatara-900: #353535;
-  --color-tuatara-950: #262626;
+:root {
+  --ui-info: var(--color-blue-600);
 
-  --color-william: #3c6e71;
-  --color-william-50: #f4f9f9;
-  --color-william-100: #dbecea;
-  --color-william-200: #b7d8d7;
-  --color-william-300: #8abebe;
-  --color-william-400: #629e9f;
-  --color-william-500: #488284;
-  --color-william-600: #3c6e71;
-  --color-william-700: #305355;
-  --color-william-800: #294446;
-  --color-william-900: #26393b;
-  --color-william-950: #121f21;
+  --ui-text-dimmed: var(--ui-color-neutral-400);
+  --ui-text-muted: var(--ui-color-neutral-500);
+  --ui-text-toned: var(--ui-color-neutral-600);
+  --ui-text: var(--ui-color-neutral-700);
+  --ui-text-highlighted: var(--ui-color-neutral-900);
+  --ui-text-inverted: var(--color-white);
 
-  --color-alto: #d9d9d9;
-  --color-alto-50: #f7f7f7;
-  --color-alto-100: #ededed;
-  --color-alto-200: #d9d9d9;
-  --color-alto-300: #0a0a0a;
-  --color-alto-400: #adadad;
-  --color-alto-500: #999999;
-  --color-alto-600: #888888;
-  --color-alto-700: #7b7b7b;
-  --color-alto-800: #676767;
-  --color-alto-900: #545454;
-  --color-alto-950: #363636;
+  --ui-bg: var(--color-white);
+  --ui-bg-muted: var(--ui-color-neutral-50);
+  --ui-bg-elevated: var(--ui-color-neutral-100);
+  --ui-bg-accented: var(--ui-color-neutral-200);
+  --ui-bg-inverted: var(--ui-color-neutral-900);
 
-  --color-pickled-bluewood: #284b63;
-  --color-pickled-bluewood-50: #f4f8fb;
-  --color-pickled-bluewood-100: #e8eff6;
-  --color-pickled-bluewood-200: #ccdeeb;
-  --color-pickled-bluewood-300: #9fc4da;
-  --color-pickled-bluewood-400: #6ba4c5;
-  --color-pickled-bluewood-500: #4889af;
-  --color-pickled-bluewood-600: #366e93;
-  --color-pickled-bluewood-700: #2d5977;
-  --color-pickled-bluewood-800: #284b63;
-  --color-pickled-bluewood-900: #264054;
-  --color-pickled-bluewood-950: #192a38;
+  --ui-border: var(--ui-color-neutral-200);
+  --ui-border-muted: var(--ui-color-neutral-200);
+  --ui-border-accented: var(--ui-color-neutral-300);
+  --ui-border-inverted: var(--ui-color-neutral-900);
+}
+
+.dark {
+  --ui-info: var(--color-blue-600);
+
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-400);
+  --ui-text-toned: var(--ui-color-neutral-300);
+  --ui-text: var(--ui-color-neutral-200);
+  --ui-text-highlighted: var(--color-white);
+  --ui-text-inverted: var(--ui-color-neutral-900);
+
+  --ui-bg: var(--ui-color-neutral-900);
+  --ui-bg-muted: var(--ui-color-neutral-800);
+  --ui-bg-elevated: var(--ui-color-neutral-800);
+  --ui-bg-accented: var(--ui-color-neutral-700);
+  --ui-bg-inverted: var(--color-white);
+
+  --ui-border: var(--ui-color-neutral-800);
+  --ui-border-muted: var(--ui-color-neutral-700);
+  --ui-border-accented: var(--ui-color-neutral-700);
+  --ui-border-inverted: var(--color-white);
 }

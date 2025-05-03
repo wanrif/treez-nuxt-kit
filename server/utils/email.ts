@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
   host: process.env.NUXT_EMAIL_HOST,
-  port: Number(process.env.NUXT_EMAIL_PORT || 587), // e.g., 587 or 465
+  port: Number(process.env.NUXT_EMAIL_PORT || 587),
   // secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
   auth: {
     user: process.env.NUXT_EMAIL_USER,
