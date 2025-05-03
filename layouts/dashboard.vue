@@ -125,7 +125,7 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped>
+<style>
 @reference "tailwindcss";
 
 .router-link-active {
