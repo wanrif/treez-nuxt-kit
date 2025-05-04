@@ -1,5 +1,7 @@
 import { defu } from 'defu'
 
+// Import i18n composables
+
 type MiddlewareOptions =
   | false
   | {
@@ -34,16 +36,34 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (to.meta?.auth === false) {
     return
   }
-  const { loggedIn, options, fetchSession, user } = useAuth() // Add 'user'
+  const { loggedIn, options, fetchSession, user } = useAuth()
   const { only, redirectUserTo, redirectGuestTo } = defu(to.meta?.auth, options)
+  const { $localePath, $i18n } = useNuxtApp()
+
+  // Check if the path is just a locale switch (e.g., "/id") or root path for default locale
+  const { locales } = $i18n
+
+  // Check if this is a language switch navigation
+  const isRootPath = to.path === '/' || to.path === ''
+  const isLocaleRootPath =
+    isRootPath || locales.value.some((locale) => to.path === `/${locale.code}` || to.path === `/${locale.code}/`)
+
+  // Skip auth redirection for locale root paths (language switching)
+  if (isLocaleRootPath) {
+    return
+  }
+
+  // Generate locale-specific redirect paths
+  const localeRedirectUserTo = $localePath(redirectUserTo, $i18n.locale?.value)
+  const localeRedirectGuestTo = $localePath(redirectGuestTo, $i18n.locale?.value)
 
   // If guest mode, redirect if authenticated
   if (only === 'guest' && loggedIn.value) {
-    // Avoid infinite redirect
-    if (to.path === redirectUserTo) {
+    // Avoid infinite redirect (compare with locale-specific path)
+    if (to.path === localeRedirectUserTo) {
       return
     }
-    return navigateTo(redirectUserTo)
+    return navigateTo(localeRedirectUserTo)
   }
 
   // If client-side, fetch session between each navigation
@@ -59,20 +79,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
     // Redirect if user is not an admin
     if (user.value?.role !== 'admin') {
-      // Avoid infinite redirect
-      if (to.path === redirectUserTo) {
+      // Avoid infinite redirect (compare with locale-specific path)
+      if (to.path === localeRedirectUserTo) {
         return
       }
-      return navigateTo(redirectUserTo)
+      return navigateTo(localeRedirectUserTo)
     }
   }
 
   // If not authenticated and the page is not guest-only, redirect to guest route
   if (!loggedIn.value && only !== 'guest') {
-    // Avoid infinite redirect
-    if (to.path === redirectGuestTo) {
+    // Avoid infinite redirect (compare with locale-specific path)
+    if (to.path === localeRedirectGuestTo) {
       return
     }
-    return navigateTo(redirectGuestTo)
+    return navigateTo(localeRedirectGuestTo)
   }
 })

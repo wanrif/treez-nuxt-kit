@@ -7,8 +7,7 @@ const localePath = useLocalePath()
 const route = useRoute()
 const { isSidebarExpanded, isMobileMenuOpen, isMobile, activeSubmenu, toggleSidebar, toggleMobileMenu, toggleSubmenu } =
   useSidebar()
-
-const showContent = ref(false)
+const isMounted = useMounted()
 
 watch(
   () => route.fullPath,
@@ -40,30 +39,18 @@ const menuItems = computed(() =>
     subMenu: item.subMenu?.map((sub) => ({ ...sub, label: t(sub.label), to: localePath(sub.to) })),
   }))
 )
-
-onMounted(async () => {
-  // Ensure auth state is potentially checked here or via middleware before showing content
-  // User data should be available via useAuth after initial fetch or middleware check
-  await nextTick() // Ensure reactivity updates if user data loads slightly later
-  showContent.value = true
-})
 </script>
 
 <template>
-  <div
-    class="relative min-h-screen bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800"
-  >
-    <!-- Loading Spinner shown initially -->
-    <LoadingSpinner size="lg" :show="!showContent" />
+  <div class="relative min-h-screen bg-gradient-to-br from-white to-brand-50 dark:from-brand-900 dark:to-brand-800">
+    <LoadingSpinner size="lg" :show="!isMounted" />
 
-    <!-- Use v-show to hide content visually while loading, keeping the DOM structure -->
-    <!-- Use 'contents' display property to avoid adding an extra layout div -->
-    <div v-show="showContent" class="contents">
+    <div v-show="isMounted" class="contents">
       <!-- Mobile Menu Overlay -->
       <Transition name="fade">
         <div
           v-show="isMobileMenuOpen"
-          class="fixed inset-0 z-40 bg-neutral-900/50 backdrop-blur-sm md:hidden"
+          class="fixed inset-0 z-40 bg-brand-900/50 backdrop-blur-sm md:hidden"
           @click="toggleMobileMenu"
         />
       </Transition>
@@ -90,16 +77,16 @@ onMounted(async () => {
       >
         <!-- Header -->
         <header
-          class="sticky top-0 z-30 border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-700 dark:bg-neutral-800/80"
+          class="sticky top-0 z-30 border-b border-gray-50 bg-white/80 backdrop-blur-md dark:border-brand-700 dark:bg-brand-800/80"
         >
           <div class="px-4 py-4 md:px-6">
             <div class="flex items-center justify-between">
               <!-- Mobile Menu Button -->
               <button
-                class="flex items-center justify-center rounded-lg p-2 hover:bg-neutral-100 md:hidden dark:hover:bg-neutral-700/50"
+                class="flex items-center justify-center rounded-lg p-2 hover:bg-brand-100 md:hidden dark:hover:bg-brand-700/50"
                 @click="toggleMobileMenu"
               >
-                <Icon name="tabler:menu-2" class="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
+                <Icon name="tabler:menu-2" class="h-6 w-6 text-brand-600 dark:text-brand-300" />
               </button>
 
               <h2
@@ -118,7 +105,6 @@ onMounted(async () => {
 
         <main class="p-4 md:p-6">
           <slot />
-          <!-- Slot is now always rendered within the layout structure -->
         </main>
       </div>
     </div>
@@ -126,10 +112,10 @@ onMounted(async () => {
 </template>
 
 <style>
-@reference "tailwindcss";
+@reference "../assets/css/main.css";
 
 .router-link-active {
-  @apply bg-neutral-50 dark:bg-neutral-700/50;
+  @apply bg-white dark:bg-brand-700/50;
 }
 
 .router-link-active.router-link-exact-active {

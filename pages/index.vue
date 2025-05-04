@@ -22,15 +22,15 @@ onMounted(() => {
   <div class="relative">
     <div
       v-if="mounted"
-      class="relative overflow-hidden bg-gradient-to-b from-primary-50 to-white transition-opacity duration-500 dark:from-gray-900 dark:to-gray-900"
+      class="relative overflow-hidden bg-gradient-to-b from-primary-50 to-white transition-opacity duration-500 dark:from-brand-950 dark:to-brand-950"
     >
       <!-- Hero Section -->
       <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div class="text-center">
-          <h1 class="mb-6 text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h1 class="mb-6 text-6xl font-bold tracking-tight text-brand-900 dark:text-white">
             {{ t('hero_title') }} <span class="text-primary-600 dark:text-primary-400">Treez-Nuxtkit</span>
           </h1>
-          <p class="mx-auto mb-10 max-w-2xl text-xl text-gray-600 dark:text-gray-300">
+          <p class="mx-auto mb-10 max-w-2xl text-xl text-brand-600 dark:text-brand-300">
             {{ t('hero_subtitle') }}
           </p>
           <div class="flex justify-center gap-4">
@@ -46,7 +46,7 @@ onMounted(() => {
           <div
             v-for="(feature, index) in features"
             :key="feature.titleKey"
-            class="feature-card card-hover rounded-xl bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md dark:bg-gray-800"
+            class="feature-card card-hover group rounded-xl bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md dark:bg-brand-800"
             :style="{ animationDelay: `${index * 0.2}s` }"
           >
             <div
@@ -54,8 +54,8 @@ onMounted(() => {
             >
               <Icon :name="feature.icon" class="text-2xl text-primary-600 dark:text-primary-400" />
             </div>
-            <h3 class="mb-2 text-xl font-semibold dark:text-white">{{ t(feature.titleKey) }}</h3>
-            <p class="text-gray-600 dark:text-gray-300">{{ t(feature.descKey) }}</p>
+            <h3 class="mb-2 text-xl font-semibold group-hover:text-white dark:text-white">{{ t(feature.titleKey) }}</h3>
+            <p class="text-brand-600 group-hover:text-white dark:text-brand-300">{{ t(feature.descKey) }}</p>
           </div>
         </div>
       </div>
@@ -63,25 +63,25 @@ onMounted(() => {
 
     <div
       v-else
-      class="relative overflow-hidden bg-gradient-to-b from-primary-50 to-white dark:from-gray-900 dark:to-gray-900"
+      class="relative overflow-hidden bg-gradient-to-b from-primary-50 to-white dark:from-brand-900 dark:to-brand-900"
     >
       <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div class="animate-pulse text-center">
-          <div class="mx-auto mb-6 h-16 w-3/4 rounded-lg bg-gray-200 dark:bg-gray-800" />
-          <div class="mx-auto mb-10 h-24 w-2/3 rounded-lg bg-gray-200 dark:bg-gray-800" />
+          <div class="mx-auto mb-6 h-16 w-3/4 rounded-lg bg-brand-200 dark:bg-brand-800" />
+          <div class="mx-auto mb-10 h-24 w-2/3 rounded-lg bg-brand-200 dark:bg-brand-800" />
           <div class="flex justify-center gap-4">
-            <div class="h-12 w-32 rounded-lg bg-gray-200 dark:bg-gray-800" />
-            <div class="h-12 w-32 rounded-lg bg-gray-200 dark:bg-gray-800" />
+            <div class="h-12 w-32 rounded-lg bg-brand-200 dark:bg-brand-800" />
+            <div class="h-12 w-32 rounded-lg bg-brand-200 dark:bg-brand-800" />
           </div>
         </div>
       </div>
 
       <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div class="grid gap-8 md:grid-cols-3">
-          <div v-for="i in 3" :key="i" class="animate-pulse rounded-xl bg-white p-6 dark:bg-gray-800">
-            <div class="mb-4 h-12 w-12 rounded-lg bg-gray-200 dark:bg-gray-700" />
-            <div class="mb-2 h-6 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
-            <div class="h-4 w-full rounded bg-gray-200 dark:bg-gray-700" />
+          <div v-for="i in 3" :key="i" class="animate-pulse rounded-xl bg-white p-6 dark:bg-brand-800">
+            <div class="mb-4 h-12 w-12 rounded-lg bg-brand-200 dark:bg-brand-700" />
+            <div class="mb-2 h-6 w-3/4 rounded bg-brand-200 dark:bg-brand-700" />
+            <div class="h-4 w-full rounded bg-brand-200 dark:bg-brand-700" />
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 <template>
-  <div class="relative flex min-h-screen flex-col scroll-smooth bg-gray-50 antialiased dark:bg-gray-900">
+  <div class="relative flex min-h-screen flex-col scroll-smooth bg-white antialiased dark:bg-brand-950">
     <NavigationBar
-      class="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/80"
+      class="sticky top-0 z-50 bg-gradient-to-t from-primary-50 to-white backdrop-blur-sm dark:border-brand-800 dark:bg-brand-900 dark:bg-gradient-to-t dark:from-brand-900 dark:to-brand-900"
     />
     <main class="flex-grow">
       <slot />

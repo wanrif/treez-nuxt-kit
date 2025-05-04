@@ -1,25 +1,15 @@
 import { defineStore } from 'pinia'
 import { parse, stringify } from 'zipson'
 
-import type {
-  ApiError,
-  ChangePasswordCredentials,
-  IUser,
-  LoginCredentials,
-  RegisterCredentials,
-  UpdateProfileCredentials,
-} from '~/types'
+import type { ApiError, ChangePasswordCredentials, LoginCredentials, RegisterCredentials } from '~/types'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as IUser | null,
     error: null as string | null,
     loading: false,
   }),
 
-  getters: {
-    isAuthenticated: (state) => !!state.user,
-  },
+  getters: {},
 
   actions: {
     async login(credentials: LoginCredentials) {
@@ -27,17 +17,14 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       try {
         const { signIn } = useAuth()
-        const { data, error } = await signIn.email({
+        const { error } = await signIn.email({
           email: credentials.email,
           password: credentials.password,
         })
         if (error) throw new Error(error?.message, { cause: error })
-        if (!data?.token) throw new Error('No token received')
-        // await this.fetchProfile()
       } catch (error: unknown) {
         const err = error as ApiError
         this.error = err.message
-        this.user = null
         throw err
       } finally {
         this.loading = false
@@ -54,18 +41,6 @@ export const useAuthStore = defineStore('auth', {
         })
 
         if (error) throw new Error(error?.message, { cause: error })
-      } catch (error: unknown) {
-        const err = error as ApiError
-        this.error = err.message
-        throw err
-      }
-    },
-    async logout() {
-      const { $trpc } = useNuxtApp()
-      try {
-        await $trpc.auth.logout.mutate()
-        this.user = null
-        navigateTo('/login')
       } catch (error: unknown) {
         const err = error as ApiError
         this.error = err.message
@@ -103,18 +78,6 @@ export const useAuthStore = defineStore('auth', {
         throw err
       }
     },
-    // async fetchProfile() {
-    //   const { $trpc } = useNuxtApp()
-    //   this.error = null
-    //   try {
-    //     const response = await $trpc.user.profile.query()
-    //     if (!response.data?.user) throw new Error('No user received')
-    //     this.user = response.data.user as IUser
-    //   } catch (error: unknown) {
-    //     const err = error as ApiError
-    //     this.error = err.message
-    //   }
-    // },
     async changePassword(credentials: ChangePasswordCredentials) {
       const { $trpc } = useNuxtApp()
       this.error = null
@@ -127,27 +90,10 @@ export const useAuthStore = defineStore('auth', {
         throw err
       }
     },
-    async updateProfile(profile: UpdateProfileCredentials) {
-      const { $trpc } = useNuxtApp()
-      this.error = null
-      try {
-        profile.id = this.user?.id
-        // const response = await $trpc.user.update.mutate(profile)
-        // if (!response.data?.user) {
-        //   throw new Error('No user data in response')
-        // }
-        // this.user = response.data.user as IUser
-        // return response
-      } catch (error: unknown) {
-        const err = error as ApiError
-        this.error = err.message
-        throw err
-      }
-    },
   },
 
   persist: {
-    pick: ['user', 'token'],
+    pick: [],
     serializer: {
       deserialize: parse,
       serialize: stringify,

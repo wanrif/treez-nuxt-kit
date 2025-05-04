@@ -1,9 +1,4 @@
 <script lang="ts" setup>
-import { useField, useForm } from 'vee-validate'
-import * as zod from 'zod'
-
-import { toTypedSchema } from '@vee-validate/zod'
-
 definePageMeta({
   layout: 'dashboard',
   auth: {
@@ -17,34 +12,18 @@ useHead({
   meta: [{ name: 'description', content: 'Settings page description' }],
 })
 
+const { user } = useAuth()
 const { locale, locales, t } = useI18n()
-const switchLocalePath = useSwitchLocalePath()
-const mounted = ref(false)
-
-onMounted(() => {
-  mounted.value = true
-})
-
-const handleLanguageChange = async (langCode: 'en' | 'id') => {
-  settings.value.account.language = langCode
-  locale.value = langCode
-  await navigateTo(switchLocalePath(langCode), {
-    replace: true,
-    external: true,
-  })
-}
-
-const availableLocales = computed(() => {
-  return (locales.value || []).map((locale) => ({
-    label: new Intl.DisplayNames([locale.code], { type: 'language' }).of(locale.code) || locale.code,
-    code: locale.code,
-  }))
-})
+const localePath = useLocalePath()
+const isMounted = useMounted()
+const showTwoFAConfirmModal = ref(false)
+const currentTotpURI = ref<string | null>(null)
+const currentBackupCodes = ref<string[] | null>(null)
 
 const settings = ref({
   account: {
-    email: 'john@example.com',
-    language: locale,
+    email: user.value?.email || '',
+    language: locale.value,
     timezone: 'UTC+7',
   },
   notifications: {
@@ -60,8 +39,35 @@ const settings = ref({
   },
   privacy: {
     profileVisibility: 'public',
-    twoFactorAuth: false,
+    twoFactorAuth: user?.value?.twoFactorEnabled || false,
   },
+})
+const showBackupCodeModal = ref(false)
+
+const handleLanguageChange = async (newLangCode: string) => {
+  if (newLangCode === 'en' || newLangCode === 'id') {
+    locale.value = newLangCode
+    await navigateTo(localePath('/dashboard/settings'), {
+      replace: true,
+      external: true,
+    })
+  }
+}
+
+watch(
+  () => settings.value.account.language,
+  (newLang, oldLang) => {
+    if (newLang !== oldLang && isMounted.value) {
+      handleLanguageChange(newLang)
+    }
+  }
+)
+
+const availableLocales = computed(() => {
+  return (locales.value || []).map((locale) => ({
+    label: new Intl.DisplayNames([locale.code], { type: 'language' }).of(locale.code) || locale.code,
+    value: locale.code,
+  }))
 })
 
 const themes = computed(() => [
@@ -95,100 +101,40 @@ watch(
   { immediate: true }
 )
 
-const passwordError = ref('')
-const passwordSuccess = ref('')
-const isChangingPassword = ref(false)
-
-const authStore = useAuthStore()
-
-const passwordSchema = toTypedSchema(
-  zod
-    .object({
-      currentPassword: zod.string().min(8, t('validation_password_min')),
-      newPassword: zod
-        .string()
-        .min(8, t('validation_password_min'))
-        .regex(/[A-Z]/, t('validation_password_uppercase'))
-        .regex(/[a-z]/, t('validation_password_lowercase'))
-        .regex(/[0-9]/, t('validation_password_number')),
-      confirmPassword: zod.string().min(1, t('validation_confirm_password_required')),
-    })
-    .refine((data) => data.newPassword === data.confirmPassword, {
-      message: t('passwords_not_match'),
-      path: ['confirmPassword'],
-    })
-)
-
-const { handleSubmit, resetForm, errors } = useForm({
-  validationSchema: passwordSchema,
-})
-
-const { value: currentPassword } = useField<string>('currentPassword')
-const { value: newPassword } = useField<string>('newPassword')
-const { value: confirmPassword } = useField<string>('confirmPassword')
-
-const handlePasswordChange = handleSubmit(async (values) => {
-  try {
-    passwordError.value = ''
-    passwordSuccess.value = ''
-    isChangingPassword.value = true
-
-    await authStore.changePassword({
-      oldPassword: values.currentPassword,
-      newPassword: values.newPassword,
-      confirmNewPassword: values.confirmPassword,
-    })
-
-    passwordSuccess.value = t('password_changed')
-    resetForm()
-  } catch (error: unknown) {
-    const err = error as Error & {
-      data?: { zodError?: { fieldErrors?: Record<string, string[]>; formErrors?: string[] } }
-    }
-    if (err.data?.zodError) {
-      const fieldErrors = err.data?.zodError?.fieldErrors
-      const formErrors = err.data?.zodError?.formErrors
-
-      if (formErrors && formErrors.length > 0) {
-        passwordError.value = formErrors[0]
-      } else if (fieldErrors) {
-        const firstField = Object.keys(fieldErrors)[0]
-        if (firstField && fieldErrors[firstField].length > 0) {
-          passwordError.value = fieldErrors[firstField][0]
-        }
-      }
-    } else {
-      passwordError.value = err.message || t('password_error')
-    }
-  } finally {
-    isChangingPassword.value = false
-  }
-})
+const {
+  fields: passwordFields,
+  errors: passwordErrors,
+  isSubmitting: isChangingPassword,
+  meta: passwordMeta,
+  error: passwordError,
+  success: passwordSuccess,
+  submit: handlePasswordChange,
+} = useChangePasswordForm()
 
 const showTwoFAModal = ref(false)
 const twoFAAction = ref<'enable' | 'disable'>('enable')
-const is2FAProcessing = ref(false)
 
-const handle2FAToggle = () => {
-  twoFAAction.value = settings.value.privacy.twoFactorAuth ? 'disable' : 'enable'
+const initiateTwoFAChange = () => {
+  if (settings.value.privacy.twoFactorAuth) {
+    twoFAAction.value = 'disable'
+  } else {
+    twoFAAction.value = 'enable'
+  }
   showTwoFAModal.value = true
 }
 
-const confirm2FAChange = async () => {
-  try {
-    is2FAProcessing.value = true
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+const handleTwoFAEnabled = ({ totpURI, backupCodes }: { totpURI: string; backupCodes: string[] }) => {
+  currentTotpURI.value = totpURI
+  currentBackupCodes.value = backupCodes
+  showTwoFAConfirmModal.value = true
+}
 
-    settings.value.privacy.twoFactorAuth = !settings.value.privacy.twoFactorAuth
-    showTwoFAModal.value = false
+const handleTwoFADisabled = () => {
+  settings.value.privacy.twoFactorAuth = false
+}
 
-    alert(t(settings.value.privacy.twoFactorAuth ? 'two_fa_enabled' : 'two_fa_disabled'))
-  } catch (error) {
-    console.error('2FA toggle failed:', error)
-    alert(t('two_fa_error'))
-  } finally {
-    is2FAProcessing.value = false
-  }
+const handleTwoFAVerified = () => {
+  settings.value.privacy.twoFactorAuth = true
 }
 </script>
 
@@ -196,136 +142,79 @@ const confirm2FAChange = async () => {
   <div class="mx-auto max-w-4xl space-y-6 px-4 sm:px-6">
     <!-- Page Header -->
     <div class="flex items-center justify-between">
-      <template v-if="mounted">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ t('settings') }}</h1>
+      <template v-if="isMounted">
+        <h1 class="text-2xl font-semibold text-brand-900 dark:text-white">{{ t('settings') }}</h1>
       </template>
       <template v-else>
-        <div class="h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+        <div class="h-6 w-32 animate-pulse rounded bg-brand-200 dark:bg-brand-700" />
       </template>
     </div>
 
     <!-- Settings Content -->
-    <template v-if="mounted">
+    <template v-if="isMounted">
       <div class="grid gap-6">
         <!-- Account Settings -->
-        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
-          <h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{{ t('account_settings') }}</h2>
+        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-brand-800">
+          <h2 class="mb-6 text-lg font-semibold text-brand-900 dark:text-white">{{ t('account_settings') }}</h2>
           <div class="block">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div class="col-span-2">
-                <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label class="mb-1 block text-sm font-medium text-brand-700 dark:text-brand-300">
                   {{ t('account_email_address') }}
                 </label>
-                <input
+                <UInput
                   v-model="settings.account.email"
                   type="email"
                   :placeholder="t('enter_email_address')"
-                  class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  class="w-full rounded-lg bg-white text-brand-900 disabled:opacity-50 dark:bg-brand-700 dark:text-white"
                   disabled
                 />
               </div>
               <div class="block">
-                <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label class="mb-1 block text-sm font-medium text-brand-700 dark:text-brand-300">
                   {{ $t('account_language') }}
                 </label>
-                <select
+                <USelect
                   v-model="settings.account.language"
-                  class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  @change="(e) => handleLanguageChange((e.target as HTMLSelectElement).value as 'en' | 'id')"
-                >
-                  <option
-                    v-for="available in availableLocales"
-                    :key="available.code"
-                    :value="available.code"
-                    :selected="available.code === settings.account.language"
-                  >
-                    {{ available.label }}
-                  </option>
-                </select>
+                  :items="availableLocales"
+                  item-attribute="label"
+                  value-attribute="value"
+                  size="md"
+                  :ui="{
+                    trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200',
+                    content: 'ring ring-gray-100 dark:ring-brand-900',
+                    item: 'data-highlighted:not-data-disabled:text-[var(--ui-text)] data-highlighted:not-data-disabled:before:bg-brand-50/50 dark:data-highlighted:not-data-disabled:before:bg-brand-800/50',
+                  }"
+                  class="w-full rounded-lg bg-white text-brand-900 data-[state=open]:ring-2 data-[state=open]:ring-blue-600 dark:bg-brand-700 dark:text-white dark:data-[state=open]:ring-blue-600"
+                />
               </div>
               <div class="block">
-                <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label class="mb-1 block text-sm font-medium text-brand-700 dark:text-brand-300">
                   {{ $t('account_timezone') }}
                 </label>
-                <select
+                <USelect
                   v-model="settings.account.timezone"
-                  class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                >
-                  <option>UTC+7</option>
-                  <option>UTC+0</option>
-                  <option>UTC+1</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Notifications -->
-        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
-          <h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{{ t('notifications') }}</h2>
-          <div class="space-y-4">
-            <div v-for="(value, key) in settings.notifications" :key="key" class="flex items-center justify-between">
-              <div>
-                <h3 class="text-sm font-medium text-gray-900 capitalize dark:text-white">
-                  {{ t(`${key}_notifications`) }}
-                </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ t('receive_notifications', { type: key }) }}
-                </p>
-              </div>
-              <USwitch v-model="settings.notifications[key]" color="info" size="lg" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Appearance -->
-        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
-          <h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{{ t('appearance') }}</h2>
-          <div class="space-y-6">
-            <div>
-              <label class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ t('theme') }}
-              </label>
-              <div class="grid grid-cols-3 gap-3">
-                <button
-                  v-for="theme in themes"
-                  :key="theme.value"
-                  class="flex items-center justify-center rounded-lg border px-4 py-2 transition-all duration-200"
-                  :class="[
-                    settings.appearance.theme === theme.value
-                      ? 'border-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                      : 'border-gray-300 hover:border-blue-600/50 dark:border-gray-600',
+                  :items="[
+                    { label: 'UTC+7', value: 'UTC+7' },
+                    { label: 'UTC+0', value: 'UTC+0' },
+                    { label: 'UTC+1', value: 'UTC+1' },
                   ]"
-                  @click="handleThemeUpdate(theme.value)"
-                >
-                  {{ theme.label }}
-                </button>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">Compact Mode</h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Reduce spacing and padding</p>
-                </div>
-                <USwitch v-model="settings.appearance.compact" color="info" size="lg" />
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">Enable Animations</h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Show animations and transitions</p>
-                </div>
-                <USwitch v-model="settings.appearance.animations" color="info" size="lg" />
+                  size="md"
+                  :ui="{
+                    trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200',
+                    content: 'ring ring-gray-100 dark:ring-brand-900',
+                    item: 'data-highlighted:not-data-disabled:text-[var(--ui-text)] data-highlighted:not-data-disabled:before:bg-brand-50/50 dark:data-highlighted:not-data-disabled:before:bg-brand-800/50',
+                  }"
+                  class="w-full rounded-lg bg-white text-brand-900 data-[state=open]:ring-2 data-[state=open]:ring-blue-600 dark:bg-brand-700 dark:text-white dark:data-[state=open]:ring-blue-600"
+                />
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Add Change Password Section before Privacy section -->
-        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
-          <h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{{ t('change_password') }}</h2>
+        <!-- Change Password Section -->
+        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-brand-800">
+          <h2 class="mb-6 text-lg font-semibold text-brand-900 dark:text-white">{{ t('change_password') }}</h2>
           <form class="max-w-md space-y-4" @submit.prevent="handlePasswordChange">
             <!-- Error/Success Messages -->
             <div
@@ -341,146 +230,195 @@ const confirm2FAChange = async () => {
               {{ passwordSuccess }}
             </div>
 
-            <!-- Password Fields -->
-            <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ t('current_password') }}
-              </label>
-              <input
-                v-model="currentPassword"
+            <!-- Password Fields using UFormField and UInput -->
+            <UFormField
+              v-slot="{ error: fieldError }"
+              :label="t('current_password')"
+              :error="passwordErrors.currentPassword"
+            >
+              <UInput
+                v-model="passwordFields.currentPassword.value.value"
                 type="password"
                 :placeholder="t('enter_current_password')"
-                :class="[
-                  'w-full rounded-lg border bg-white px-4 py-2 text-gray-900 dark:bg-gray-700 dark:text-white',
-                  'focus:border-transparent focus:ring-2 focus:ring-blue-600 focus:outline-none dark:focus:ring-blue-400',
-                  'transition duration-200',
-                  errors.currentPassword
-                    ? 'border-red-600 focus:ring-red-600 dark:border-red-400 dark:focus:ring-red-400'
-                    : 'border-gray-300 dark:border-gray-600',
-                ]"
+                autocomplete="current-password"
+                color="info"
+                class="w-full rounded-lg bg-white text-brand-900 disabled:opacity-50 dark:bg-brand-700 dark:text-white"
+                :trailing-icon="fieldError ? 'i-heroicons-exclamation-triangle-20-solid' : undefined"
               />
-              <span v-if="errors.currentPassword" class="text-sm text-red-600 dark:text-red-400">
-                {{ errors.currentPassword }}
-              </span>
-            </div>
-            <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ t('new_password') }}
-              </label>
-              <input
-                v-model="newPassword"
+            </UFormField>
+
+            <UFormField v-slot="{ error: fieldError }" :label="t('new_password')" :error="passwordErrors.newPassword">
+              <UInput
+                v-model="passwordFields.newPassword.value.value"
                 type="password"
                 :placeholder="t('enter_new_password')"
-                :class="[
-                  'w-full rounded-lg border bg-white px-4 py-2 text-gray-900 dark:bg-gray-700 dark:text-white',
-                  'focus:border-transparent focus:ring-2 focus:ring-blue-600 focus:outline-none dark:focus:ring-blue-400',
-                  'transition duration-200',
-                  errors.newPassword
-                    ? 'border-red-600 focus:ring-red-600 dark:border-red-400 dark:focus:ring-red-400'
-                    : 'border-gray-300 dark:border-gray-600',
-                ]"
+                autocomplete="new-password"
+                color="info"
+                class="w-full rounded-lg bg-white text-brand-900 disabled:opacity-50 dark:bg-brand-700 dark:text-white"
+                :trailing-icon="fieldError ? 'i-heroicons-exclamation-triangle-20-solid' : undefined"
               />
-              <span v-if="errors.newPassword" class="text-sm text-red-600 dark:text-red-400">
-                {{ errors.newPassword }}
-              </span>
-            </div>
-            <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ t('confirm_password') }}
-              </label>
-              <input
-                v-model="confirmPassword"
+            </UFormField>
+
+            <UFormField
+              v-slot="{ error: fieldError }"
+              :label="t('confirm_password')"
+              :error="passwordErrors.confirmPassword"
+            >
+              <UInput
+                v-model="passwordFields.confirmPassword.value.value"
                 type="password"
                 :placeholder="t('confirm_new_password')"
-                :class="[
-                  'w-full rounded-lg border bg-white px-4 py-2 text-gray-900 dark:bg-gray-700 dark:text-white',
-                  'focus:border-transparent focus:ring-2 focus:ring-blue-600 focus:outline-none dark:focus:ring-blue-400',
-                  'transition duration-200',
-                  errors.confirmPassword
-                    ? 'border-red-600 focus:ring-red-600 dark:border-red-400 dark:focus:ring-red-400'
-                    : 'border-gray-300 dark:border-gray-600',
-                ]"
+                autocomplete="new-password"
+                color="info"
+                class="w-full rounded-lg bg-white text-brand-900 disabled:opacity-50 dark:bg-brand-700 dark:text-white"
+                :trailing-icon="fieldError ? 'i-heroicons-exclamation-triangle-20-solid' : undefined"
               />
-              <span v-if="errors.confirmPassword" class="text-sm text-red-600 dark:text-red-400">
-                {{ errors.confirmPassword }}
-              </span>
-            </div>
+            </UFormField>
 
-            <!-- Submit Button -->
+            <!-- Submit Button using UButton -->
             <div class="pt-2">
-              <button
+              <UButton
                 type="submit"
-                :disabled="isChangingPassword || !currentPassword || !newPassword || !confirmPassword"
-                class="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                color="primary"
+                :loading="isChangingPassword"
+                :disabled="isChangingPassword || !passwordMeta.valid"
+                class="w-full sm:w-auto"
               >
-                <Icon v-if="isChangingPassword" name="tabler:loader-2" class="h-4 w-4 animate-spin" />
-                <span>{{ isChangingPassword ? t('changing_password') : t('change_password') }}</span>
-              </button>
+                {{ isChangingPassword ? t('changing_password') : t('change_password') }}
+              </UButton>
             </div>
           </form>
         </div>
 
         <!-- Privacy -->
-        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
-          <h2 class="mb-6 text-lg font-semibold text-gray-900 dark:text-white">{{ t('privacy_security') }}</h2>
+        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-brand-800">
+          <h2 class="mb-6 text-lg font-semibold text-brand-900 dark:text-white">{{ t('privacy_security') }}</h2>
           <div class="space-y-6">
             <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label class="mb-1 block text-sm font-medium text-brand-700 dark:text-brand-300">
                 {{ t('profile_visibility') }}
               </label>
-              <select
+              <USelect
                 v-model="settings.privacy.profileVisibility"
-                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              >
-                <option v-for="option in visibilityOptions" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
+                :items="visibilityOptions"
+                :ui="{
+                  trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200',
+                  content: 'ring ring-gray-100 dark:ring-brand-900',
+                  item: 'data-highlighted:not-data-disabled:text-[var(--ui-text)] data-highlighted:not-data-disabled:before:bg-brand-50/50 dark:data-highlighted:not-data-disabled:before:bg-brand-800/50',
+                }"
+                class="w-full rounded-lg bg-white px-4 py-2 text-brand-900 data-[state=open]:ring-2 data-[state=open]:ring-blue-600 dark:bg-brand-700 dark:text-white dark:data-[state=open]:ring-blue-600"
+              />
             </div>
 
             <div class="flex flex-col gap-4">
               <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                <div class="flex flex-col">
+                  <h3 class="text-sm font-medium text-brand-900 dark:text-white">
                     {{ t('two_factor_auth') }}
                   </h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="text-sm text-brand-500 dark:text-brand-400">
                     {{ t('two_factor_auth_description') }}
                   </p>
                 </div>
-                <UModal :open="showTwoFAModal">
-                  <UButton
-                    :label="t(twoFAAction === 'enable' ? 'enable_2fa' : 'disable_2fa')"
-                    color="neutral"
-                    variant="subtle"
-                    @click="handle2FAToggle"
-                  />
-
-                  <template #content>
-                    <div class="flex flex-col gap-4 p-4">
-                      <p class="text-gray-600 dark:text-gray-300">
-                        {{ t(twoFAAction === 'enable' ? 'enable_2fa_confirm' : 'disable_2fa_confirm') }}
-                      </p>
-                      <div class="flex justify-end space-x-3">
-                        <button
-                          class="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
-                          @click="showTwoFAModal = false"
-                        >
-                          {{ t('cancel') }}
-                        </button>
-                        <button
-                          :disabled="is2FAProcessing"
-                          class="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
-                          @click="confirm2FAChange"
-                        >
-                          <Icon v-if="is2FAProcessing" name="tabler:loader-2" class="h-4 w-4 animate-spin" />
-                          <span>{{ t(twoFAAction === 'enable' ? 'enable' : 'disable') }}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                </UModal>
+                <USwitch
+                  :model-value="settings.privacy.twoFactorAuth"
+                  color="info"
+                  size="lg"
+                  @update:model-value="initiateTwoFAChange"
+                />
+                <SettingsTwoFAModal
+                  v-model:open="showTwoFAModal"
+                  :action="twoFAAction"
+                  @enabled="handleTwoFAEnabled"
+                  @disabled="handleTwoFADisabled"
+                />
+                <SettingsTwoFAConfirmModal
+                  v-if="currentTotpURI && currentBackupCodes"
+                  v-model:open="showTwoFAConfirmModal"
+                  :totp-u-r-i="currentTotpURI"
+                  :backup-codes="currentBackupCodes"
+                  @verified="handleTwoFAVerified"
+                />
               </div>
+              <div v-if="settings.privacy.twoFactorAuth" class="flex items-center justify-between">
+                <div class="flex flex-col">
+                  <h3 class="text-sm font-medium text-brand-900 dark:text-white">
+                    {{ t('settings_view_backup_codes') }}
+                  </h3>
+                  <p class="text-sm text-brand-500 dark:text-brand-400">
+                    {{ t('settings_view_backup_codes_description') }}
+                  </p>
+                </div>
+                <UButton
+                  :label="t('settings_view_backup_codes_button')"
+                  variant="subtle"
+                  @click="showBackupCodeModal = true"
+                />
+                <SettingsViewBackupCodeModal v-model:open="showBackupCodeModal" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appearance -->
+        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-brand-800">
+          <h2 class="mb-6 text-lg font-semibold text-brand-900 dark:text-white">{{ t('appearance') }}</h2>
+          <div class="space-y-6">
+            <div>
+              <label class="mb-3 block text-sm font-medium text-brand-700 dark:text-brand-300">
+                {{ t('theme') }}
+              </label>
+              <div class="grid grid-cols-3 gap-3">
+                <button
+                  v-for="theme in themes"
+                  :key="theme.value"
+                  class="flex items-center justify-center rounded-lg border px-4 py-2 transition-all duration-200"
+                  :class="[
+                    settings.appearance.theme === theme.value
+                      ? 'border-blue-600 bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                      : 'border-brand-300 hover:border-blue-600/50 dark:border-brand-600',
+                  ]"
+                  @click="handleThemeUpdate(theme.value)"
+                >
+                  {{ theme.label }}
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium text-brand-900 dark:text-white">Compact Mode</h3>
+                  <p class="text-sm text-brand-500 dark:text-brand-400">Reduce spacing and padding</p>
+                </div>
+                <USwitch v-model="settings.appearance.compact" color="info" size="lg" />
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-medium text-brand-900 dark:text-white">Enable Animations</h3>
+                  <p class="text-sm text-brand-500 dark:text-brand-400">Show animations and transitions</p>
+                </div>
+                <USwitch v-model="settings.appearance.animations" color="info" size="lg" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="rounded-xl bg-white p-6 shadow-sm dark:bg-brand-800">
+          <h2 class="mb-6 text-lg font-semibold text-brand-900 dark:text-white">{{ t('notifications') }}</h2>
+          <div class="space-y-4">
+            <div v-for="(value, key) in settings.notifications" :key="key" class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-medium text-brand-900 capitalize dark:text-white">
+                  {{ t(`${key}_notifications`) }}
+                </h3>
+                <p class="text-sm text-brand-500 dark:text-brand-400">
+                  {{ t('receive_notifications', { type: key }) }}
+                </p>
+              </div>
+              <USwitch v-model="settings.notifications[key]" color="info" size="lg" />
             </div>
           </div>
         </div>
@@ -488,15 +426,15 @@ const confirm2FAChange = async () => {
     </template>
     <template v-else>
       <div class="grid gap-6">
-        <div v-for="i in 4" :key="i" class="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
-          <div class="mb-6 h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+        <div v-for="i in 4" :key="i" class="rounded-xl bg-white p-6 shadow-sm dark:bg-brand-800">
+          <div class="mb-6 h-6 w-32 animate-pulse rounded bg-brand-200 dark:bg-brand-700" />
           <div class="space-y-4">
             <div v-for="j in 3" :key="j" class="flex items-center justify-between">
               <div class="space-y-2">
-                <div class="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-                <div class="h-3 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                <div class="h-4 w-24 animate-pulse rounded bg-brand-200 dark:bg-brand-700" />
+                <div class="h-3 w-48 animate-pulse rounded bg-brand-200 dark:bg-brand-700" />
               </div>
-              <div class="h-6 w-11 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div class="h-6 w-11 animate-pulse rounded-full bg-brand-200 dark:bg-brand-700" />
             </div>
           </div>
         </div>
