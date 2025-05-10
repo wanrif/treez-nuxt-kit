@@ -19,11 +19,7 @@ useHead({
 const localePath = useLocalePath()
 const { t } = useI18n()
 const route = useRoute()
-const mounted = ref(false)
-
-onMounted(() => {
-  mounted.value = true
-})
+const isMounted = useMounted()
 
 const handleLoginSuccess = async () => {
   const redirect = route.query.redirect as string
@@ -42,7 +38,7 @@ const handleLoginSuccess = async () => {
         <p class="mt-2 text-gray-600 dark:text-gray-300">{{ t('login_welcome') }}</p>
       </div>
 
-      <LoginForm v-if="mounted" @success="handleLoginSuccess" />
+      <LoginForm v-if="isMounted" @success="handleLoginSuccess" />
 
       <div v-else class="mt-8 space-y-6">
         <template v-for="i in 2" :key="i">

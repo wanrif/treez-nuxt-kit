@@ -9,7 +9,12 @@ const availableLocales = computed(() => {
 
 <template>
   <div class="flex items-center gap-3 uppercase">
-    <NuxtLink v-for="available in availableLocales" :key="available.code" :to="switchLocalePath(available.code)">
+    <NuxtLink
+      v-for="available in availableLocales"
+      :key="available.code"
+      :to="switchLocalePath(available.code)"
+      class="transition-colors hover:text-primary-500"
+    >
       {{ available.code }}
     </NuxtLink>
   </div>

@@ -18,7 +18,7 @@ export const usersTable = mysqlTable(
     website: varchar({ length: 255 }),
     bio: varchar({ length: 255 }),
     created_at: timestamp('created_at').notNull().defaultNow(),
-    updated_at: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+    updated_at: timestamp('updated_at').defaultNow().onUpdateNow().notNull(),
     role: varchar({ length: 255 }).default('user'),
     banned: int('banned', {
       unsigned: true,
@@ -27,6 +27,11 @@ export const usersTable = mysqlTable(
       .default(0),
     banReason: varchar({ length: 255 }),
     banExpires: timestamp('banExpires'),
+    twoFactorEnabled: int('twoFactorEnabled', {
+      unsigned: true,
+    })
+      .notNull()
+      .default(0),
   },
   (table) => [index('email_idx').on(table.email).using('btree')]
 )

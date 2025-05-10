@@ -1,10 +1,7 @@
 import { createAuthClient } from 'better-auth/client'
-import type { ClientOptions, InferSessionFromClient } from 'better-auth/client'
-import { adminClient } from 'better-auth/client/plugins'
+import { adminClient, inferAdditionalFields, twoFactorClient } from 'better-auth/client/plugins'
 import { defu } from 'defu'
 import type { RouteLocationRaw } from 'vue-router'
-
-import type { AuthUser } from '~/types'
 
 interface RuntimeAuthConfig {
   redirectUserTo: RouteLocationRaw | string
@@ -16,6 +13,7 @@ export function useAuth() {
   const url = useRequestURL()
   const headers = import.meta.server ? useRequestHeaders() : undefined
   const { csrf } = useCsrf()
+  const localePath = useLocalePath()
 
   const client = createAuthClient({
     baseURL: url.origin,
@@ -24,16 +22,35 @@ export function useAuth() {
         ...headers,
         'x-csrf-token': csrf,
       },
+      onError: async (context) => {
+        const { response } = context
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('X-Retry-After')
+          // eslint-disable-next-line no-console
+          console.log(`Rate limit exceeded. Retry after ${retryAfter} seconds`)
+        }
+      },
     },
-    plugins: [adminClient()],
+    plugins: [
+      inferAdditionalFields<typeof auth>(),
+      adminClient(),
+      twoFactorClient({
+        onTwoFactorRedirect() {
+          navigateTo(localePath('/two-factor'), { replace: true, external: true })
+        },
+      }),
+    ],
   })
+
+  type InferSession = typeof client.$Infer.Session.session
+  type InferUser = typeof client.$Infer.Session.user
 
   const options = defu(useRuntimeConfig().public.auth as Partial<RuntimeAuthConfig>, {
     redirectUserTo: '/',
     redirectGuestTo: '/',
   })
-  const session = useState<InferSessionFromClient<ClientOptions> | null>('auth:session', () => null)
-  const user = useState<AuthUser | null>('auth:user', () => null)
+  const session = useState<InferSession | null>('auth:session', () => null)
+  const user = useState<InferUser | null>('auth:user', () => null)
   const sessionFetching = import.meta.server ? ref(false) : useState('auth:sessionFetching', () => false)
 
   const fetchSession = async () => {
@@ -52,7 +69,7 @@ export function useAuth() {
       },
     })
     session.value = data?.session || null
-    user.value = (data?.user as unknown as AuthUser) || null
+    user.value = (data?.user as InferUser) || null
     sessionFetching.value = false
     return data
   }
@@ -89,3 +106,10 @@ export function useAuth() {
     client,
   }
 }
+
+// Export the type derived from the client instance within the composable scope
+// Note: This requires the `auth` type definition from the server to be available or inferred correctly.
+// If `auth` isn't directly importable, you might need a different approach,
+// potentially defining a base User type and using type assertion/casting where needed.
+// Assuming `auth` type can be inferred or imported:
+export type InferUserClient = ReturnType<typeof useAuth>['client']['$Infer']['Session']['user']

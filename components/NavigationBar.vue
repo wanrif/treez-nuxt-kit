@@ -64,7 +64,7 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
           <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
             <span class="font-bungee text-xl text-white">N</span>
           </div>
-          <span class="font-bungee text-xl tracking-wide text-gray-900 dark:text-white">NuxTreez</span>
+          <span class="font-bungee text-xl tracking-wide text-brand-900 dark:text-white">NuxTreez</span>
         </NuxtLink>
 
         <!-- Desktop Navigation -->
@@ -74,11 +74,11 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
               v-for="link in linkList"
               :key="link.to"
               :to="link.onClick ? undefined : link.to"
-              class="flex items-center space-x-2 rounded-lg px-3 py-2 transition-all duration-300 hover:bg-primary-50 dark:hover:bg-gray-800"
+              class="flex items-center space-x-2 rounded-lg px-3 py-2 transition-all duration-300 hover:bg-primary-50 dark:hover:bg-brand-800"
               :class="
                 !link.onClick && link.to === $route.path
                   ? 'text-primary-600 dark:text-primary-400'
-                  : 'text-gray-700 dark:text-gray-300'
+                  : 'text-brand-700 dark:text-brand-300'
               "
               @click="link.onClick ? handleLinkClick(link) : undefined"
             >
@@ -94,13 +94,13 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
 
           <template v-else>
             <template v-for="link in linkList" :key="link.to">
-              <USkeleton class="flex items-center space-x-2 rounded-lg bg-gray-200 px-3 py-2 dark:bg-gray-700">
+              <USkeleton class="flex items-center space-x-2 rounded-lg bg-brand-200 px-3 py-2 dark:bg-brand-700">
                 <USkeleton class="h-5 w-5" />
                 <USkeleton class="h-4 w-24" />
               </USkeleton>
             </template>
-            <USkeleton class="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
-            <USkeleton class="h-8 w-8 bg-gray-200 dark:bg-gray-700" />
+            <USkeleton class="h-8 w-8 bg-brand-200 dark:bg-brand-700" />
+            <USkeleton class="h-8 w-8 bg-brand-200 dark:bg-brand-700" />
           </template>
         </div>
 
@@ -112,10 +112,10 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
           </template>
           <button
             v-if="mounted"
-            class="flex items-center justify-center rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+            class="flex items-center justify-center rounded-lg p-2 transition-colors hover:bg-brand-100 dark:hover:bg-brand-800"
             @click="toggleMenu"
           >
-            <Icon :name="isOpen ? 'ph:x-bold' : 'ph:list-bold'" class="h-6 w-6 text-gray-700 dark:text-gray-300" />
+            <Icon :name="isOpen ? 'ph:x-bold' : 'ph:list-bold'" class="h-6 w-6 text-brand-700 dark:text-brand-300" />
           </button>
         </div>
       </div>
@@ -139,8 +139,8 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
                 class="flex items-center space-x-2 rounded-lg px-4 py-3 transition-colors"
                 :class="
                   !link.onClick && link.to === $route.path
-                    ? 'bg-primary-50 text-primary-600 dark:bg-gray-800 dark:text-primary-400'
-                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
+                    ? 'bg-primary-50 text-primary-600 dark:bg-brand-800 dark:text-primary-400'
+                    : 'text-brand-700 hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-brand-800'
                 "
                 @click="handleLinkClick(link, true)"
               >

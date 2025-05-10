@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import { z } from 'zod'
 
-import type { AuthUser } from '~/types'
-
 defineProps<{
-  item: AuthUser
+  item: InferUserClient
 }>()
 
 const emit = defineEmits<{
@@ -22,7 +20,7 @@ const bannedExpiration = ref([
   { label: '1 Month', value: 2592000 },
 ])
 
-const selectedUser = ref<AuthUser | null>(null)
+const selectedUser = ref<InferUserClient | null>(null)
 
 const bannedSchema = z.object({
   userId: z.string(),
@@ -40,7 +38,7 @@ const bannedForm = reactive<Partial<BannedSchema>>({
   banExpiresIn: undefined,
 })
 
-const openBanModal = (user: AuthUser) => {
+const openBanModal = (user: InferUserClient) => {
   selectedUser.value = user
   bannedForm.userId = user.id
   bannedForm.bannedReason = ''
@@ -60,38 +58,35 @@ const onSubmitBanAction = async () => {
 }
 
 const onSubmitbanned = async (userId: string) => {
-  // Call the API to ban the user
-  await client.admin
-    .banUser({
-      userId,
-      banReason: bannedForm.bannedReason === 'Other' ? bannedForm.customReason : bannedForm.bannedReason, // Optional (if not provided, the default ban reason will be used - No reason)
-      banExpiresIn: bannedForm.banExpiresIn, // Optional (if not provided, the ban will never expire)
-    })
-    .then(() => {
-      bannedModal.value = false // Close the modal
-      toast.add({ title: 'User banned successfully', color: 'success' })
-      emit('fetchUser') // Fetch the updated user list
-    })
-    .catch((error) => {
-      console.error('Failed to ban user:', error)
-      toast.add({ title: 'Failed to ban user', color: 'error' })
-    })
+  const { data, error } = await client.admin.banUser({
+    userId,
+    banReason: bannedForm.bannedReason === 'Other' ? bannedForm.customReason : bannedForm.bannedReason, // Optional (if not provided, the default ban reason will be used - No reason)
+    banExpiresIn: bannedForm.banExpiresIn, // Optional (if not provided, the ban will never expire)
+  })
+  if (data) {
+    bannedModal.value = false
+    toast.add({ title: 'User banned successfully', color: 'success' })
+    emit('fetchUser')
+  }
+  if (error) {
+    bannedModal.value = false
+    toast.add({ title: 'Failed to ban user', description: error.message, color: 'error' })
+  }
 }
 
 const onSubmitUnbanned = async (userId: string) => {
-  await client.admin
-    .unbanUser({
-      userId,
-    })
-    .then(() => {
-      bannedModal.value = false
-      toast.add({ title: 'User unbanned successfully', color: 'success' })
-      emit('fetchUser') // Fetch the updated user list
-    })
-    .catch((error) => {
-      console.error('Failed to unban user:', error)
-      toast.add({ title: 'Failed to unban user', color: 'error' })
-    })
+  const { data, error } = await client.admin.unbanUser({
+    userId,
+  })
+  if (data) {
+    bannedModal.value = false
+    toast.add({ title: 'User unbanned successfully', color: 'success' })
+    emit('fetchUser')
+  }
+  if (error) {
+    bannedModal.value = false
+    toast.add({ title: 'Failed to unban user', color: 'error' })
+  }
 }
 </script>
 
@@ -102,7 +97,7 @@ const onSubmitUnbanned = async (userId: string) => {
     :description="`Are you sure you want to ${selectedUser?.banned ? 'unban' : 'ban'} this user?`"
     close-icon="i-lucide-x"
     :ui="{ footer: 'justify-end' }"
-    class="bg-primary w-full"
+    class="w-full bg-primary"
     @close="bannedModal = false"
   >
     <UButton

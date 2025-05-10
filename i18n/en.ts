@@ -115,6 +115,10 @@ export default {
   // Footer
   footer_rights: 'All rights reserved.',
 
+  // General UI
+  loading: 'Loading...',
+  close: 'Close',
+
   // TWO FACTOR AUTHENTICATION
   enable_2fa: 'Enable Two-Factor Authentication',
   disable_2fa: 'Disable Two-Factor Authentication',
@@ -125,8 +129,62 @@ export default {
   two_fa_enabled: 'Two-factor authentication has been enabled',
   two_fa_disabled: 'Two-factor authentication has been disabled',
   two_fa_error: 'Failed to update two-factor authentication settings',
+  two_fa_success_verified: 'Two-factor authentication code verified successfully',
   enable: 'Enable',
   disable: 'Disable',
+  two_factor_title: 'Two-Factor Authentication',
+  two_factor_description: 'Enter the code from your authenticator app.',
+  two_factor_code_label: 'Verification Code',
+  two_factor_code_placeholder: '6-DIGIT-CODE',
+  two_factor_recovery_title: 'Use Recovery Code',
+  two_factor_recovery_description: 'Enter one of your recovery codes.',
+  two_factor_recovery_code_label: 'Recovery Code',
+  two_factor_recovery_code_placeholder: 'Enter your recovery code',
+  verify_code_button: 'Verify Code',
+  verification_successful: 'Verification Successful',
+  redirecting_to_dashboard: 'Redirecting to dashboard...',
+  invalid_code: 'Invalid verification code',
+  verification_failed: 'Verification failed. Please try again.',
+  use_recovery_code: 'Use a recovery code',
+  use_authentication_code: 'Use an authentication code',
+  two_fa_enable_initiated: 'Two-factor authentication initiation successful',
+  two_fa_disabled_success: 'Two-factor authentication disabled successfully',
+  two_fa_enabled_success: 'Two-factor authentication enabled successfully',
+  two_factor_scan_qr_instruction:
+    'Scan the QR code below with your authenticator app (e.g., Google Authenticator, Authy).',
+  two_factor_backup_codes_title: 'Save Your Backup Codes',
+  two_factor_backup_codes_instruction:
+    'Store these backup codes in a safe place. You can use them to access your account if you lose access to your authenticator app.',
+  settings_copy_backup_codes: 'Copy Codes',
+  copied_to_clipboard: 'Copied!',
+  two_factor_enter_code_instruction:
+    'After scanning, enter the 6-digit code from your authenticator app below to complete setup.',
+  settings_download_backup_codes: 'Download Codes',
+  two_factor_manual_entry_instruction: 'Or, enter this secret key manually into your authenticator app:',
+  copy_secret_key: 'Copy Secret Key',
+  secret_key_copied: 'Secret Key Copied!',
+  settings_view_backup_codes: 'View Backup Codes',
+  settings_view_backup_codes_description:
+    'These codes can be used to access your account if you lose access to your authenticator app.',
+  settings_view_backup_codes_button: 'View Backup Codes',
+  settings_view_backup_codes_error: 'Error Fetching Backup Codes',
+  settings_view_backup_codes_error_description: 'Could not retrieve your backup codes. Please try again.',
+  settings_backup_codes_downloaded_title: 'Codes Downloaded',
+  settings_backup_codes_downloaded_description: 'Your backup codes have been downloaded as backup-codes.txt.',
+  settings_view_backup_codes_instruction:
+    'Store these backup codes in a safe place. You will not be able to see them again.',
+  settings_backup_codes_warning_title: 'Important: Store Securely',
+  settings_backup_codes_warning_description:
+    'Treat your backup codes like your password. We recommend saving them with a password manager or printing them and storing them in a safe place.',
+  settings_backup_codes_copied_title: 'Codes Copied',
+  settings_backup_codes_copied_description: 'Your backup codes have been copied to your clipboard.',
+
+  // Trusted Device Modal
+  trusted_device_modal_title: 'Trust this Device?',
+  trusted_device_modal_description:
+    'Trusting this device will allow you to skip 2FA for {period} days on this browser.',
+  trusted_device_modal_option_yes: 'Yes, trust device',
+  trusted_device_modal_option_no: 'No, just this time',
 
   // Login page
   login: 'Login',
@@ -156,7 +214,7 @@ export default {
   back_to_login: 'Back to Login',
   check_your_email: 'Check Your Email',
   reset_link_sent: 'We have sent you a password reset link. Please check your email.',
-  forgot_password_failed: 'Failed to send reset link. Please try again.',
+  forgot_password_failed: 'Failed to send reset link. Please try again or check your email.',
 
   // Reset Password
   reset_password_title: 'Reset Password',
@@ -172,6 +230,7 @@ export default {
   validation_name_min: 'Name must be at least 2 characters',
   validation_email_required: 'Email is required',
   validation_email_invalid: 'Invalid email format',
+  validation_current_password_required: 'Current password is required',
   validation_password_min: 'Password must be at least 8 characters',
   validation_password_uppercase: 'Password must contain at least one uppercase letter',
   validation_password_lowercase: 'Password must contain at least one lowercase letter',
@@ -180,4 +239,8 @@ export default {
   validation_website_invalid: 'Invalid website format',
   validation_bio_max: 'Bio cannot exceed 250 characters',
   validation_phone_length: 'Phone number must be at least 10 characters',
+  validation_two_factor_code_required: 'Verification code is required',
+  validation_two_factor_code_length: 'Verification code must be 6 digits',
+  validation_two_factor_code_numeric: 'Verification code must be 6 digits',
+  validation_recovery_code_required: 'Recovery code is required',
 }

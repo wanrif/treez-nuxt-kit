@@ -1,0 +1,1 @@
+ALTER TABLE `twoFactor` MODIFY COLUMN `backupCodes` text NOT NULL;

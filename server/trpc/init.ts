@@ -1,22 +1,10 @@
-import { eq } from 'drizzle-orm'
 import type { H3Event } from 'h3'
-import type { JwtPayload } from 'jsonwebtoken'
-import jwt from 'jsonwebtoken'
 import { LRUCache } from 'lru-cache'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
 import { TRPCError, initTRPC } from '@trpc/server'
 
-import {
-  COOK_ACCESS_TOKEN,
-  COOK_REFRESH_TOKEN,
-  INVALID_REFRESH_TOKEN,
-  INVALID_TOKEN,
-  TOKEN_EXPIRED,
-} from '~/constant/jwt'
-import { rolesTable, usersTable } from '~/database/schema'
-import type { IUser } from '~/types'
 import { generateTransactionId } from '~/utils/commonHelper.ts'
 
 /**
@@ -62,122 +50,25 @@ export const createCallerFactory = t.createCallerFactory
 export const publicProcedure = t.procedure
 export const middleware = t.middleware
 
-// LRU Cache configurations
-const userCache = new LRUCache<string, { user: IUser; timestamp: number }>({
-  max: 500,
-  ttl: 5 * 60 * 1000,
-  updateAgeOnGet: true,
-})
-
-const tokenVerificationCache = new LRUCache<string, JwtPayload>({
-  max: 1000,
-  ttl: 60 * 1000,
-})
-
-const roleCheckCache = new LRUCache<string, boolean>({
-  max: 1000,
-  ttl: 30 * 60 * 1000,
-})
-
 const rateLimiter = new LRUCache<string, number>({
-  max: 10000,
-  ttl: 60 * 1000,
+  max: 10000, // 10k items
+  ttl: 60 * 1000, // 1 minute
 })
-
-// Helper functions
-const clearAuthCookies = (event: H3Event) => {
-  deleteCookie(event, COOK_ACCESS_TOKEN)
-  deleteCookie(event, COOK_REFRESH_TOKEN)
-}
-
-const getUserFromDB = async (userId: string): Promise<IUser | null> => {
-  const prepare = useDrizzle()
-    .select({
-      id: usersTable.id,
-      email: usersTable.email,
-      name: usersTable.name,
-      role: {
-        id: rolesTable.id,
-        name: rolesTable.name,
-      },
-    })
-    .from(usersTable)
-    .where(eq(usersTable.id, userId))
-    .limit(1)
-    .$dynamic()
-    .prepare()
-
-  const [user] = await prepare.execute()
-  return user ?? null
-}
-
-const getUserFromHeader = async (event: H3Event): Promise<IUser | null> => {
-  const access_token = getCookie(event, COOK_ACCESS_TOKEN)
-  const refresh_token = getCookie(event, COOK_REFRESH_TOKEN)
-
-  if (access_token) {
-    const cached = userCache.get(access_token)
-    if (cached) return cached.user
-  }
-
-  if (!access_token && refresh_token) {
-    try {
-      const storedToken = await findRefreshToken(refresh_token)
-      if (!storedToken) throw new AuthError(INVALID_REFRESH_TOKEN)
-
-      const { accessToken, payload } = await refreshAccessToken(refresh_token)
-      setCookie(event, COOK_ACCESS_TOKEN, accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-      })
-
-      const user = await getUserFromDB(payload.id)
-      if (user) userCache.set(accessToken, { user, timestamp: Date.now() })
-      return user
-    } catch (error) {
-      clearAuthCookies(event)
-      throw handleError(error)
-    }
-  }
-
-  if (!access_token) {
-    clearAuthCookies(event)
-    throw new AuthError(INVALID_TOKEN)
-  }
-
-  try {
-    let decoded = tokenVerificationCache.get(access_token)
-    if (!decoded) {
-      decoded = await verifyJWT(access_token)
-      tokenVerificationCache.set(access_token, decoded)
-    }
-
-    const user = await getUserFromDB(decoded.id)
-    if (user) userCache.set(access_token, { user, timestamp: Date.now() })
-    return user
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) throw new AuthError(TOKEN_EXPIRED)
-    throw handleError(error)
-  }
-}
 
 // Middleware
 const createAuthMiddleware = (requiredRole?: string) =>
   middleware(async ({ ctx, next }) => {
-    const user = await getUserFromHeader(ctx.event)
+    const session = await auth.api.getSession({
+      headers: ctx.event.headers,
+    })
+    const user = session?.user
     if (!user || !user.role) throw new AuthError('You must be logged in to access this resource')
 
     if (requiredRole) {
-      const cacheKey = `${user.id}:${requiredRole}`
-      let hasRole = roleCheckCache.get(cacheKey)
-
-      if (hasRole === undefined) {
-        hasRole = user.role.name?.toUpperCase() === requiredRole
-        roleCheckCache.set(cacheKey, hasRole)
+      const hasRole = user.role === requiredRole
+      if (!hasRole) {
+        throw new ForbiddenError('You do not have permission to access this resource')
       }
-
-      if (!hasRole) throw new ForbiddenError(`You must have ${requiredRole} role to access this resource`)
     }
 
     return next({ ctx: { ...ctx, user } })
@@ -200,3 +91,4 @@ const rateLimit = middleware(async ({ ctx, next }) => {
 
 // Protected procedure
 export const protectedProcedure = t.procedure.use(rateLimit).use(createAuthMiddleware())
+export const adminProcedure = t.procedure.use(rateLimit).use(createAuthMiddleware('admin'))

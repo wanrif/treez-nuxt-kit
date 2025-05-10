@@ -50,7 +50,7 @@ const profileItems = computed<ProfileItem[]>(() => [
   <div class="relative">
     <button
       ref="profileButtonRef"
-      class="flex items-center space-x-2 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700/50"
+      class="flex items-center space-x-2 rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-brand-700/50"
       @click="isProfileOpen = !isProfileOpen"
     >
       <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600">
@@ -64,12 +64,12 @@ const profileItems = computed<ProfileItem[]>(() => [
           }}
         </span>
       </div>
-      <span class="text-sm font-medium text-gray-600 dark:text-gray-300">
+      <span class="text-sm font-medium text-brand-600 dark:text-brand-300">
         {{ user?.name || 'John Doe' }}
       </span>
       <Icon
         name="tabler:chevron-down"
-        class="h-4 w-4 text-gray-600 transition-transform duration-200 dark:text-gray-300"
+        class="h-4 w-4 text-brand-600 transition-transform duration-200 dark:text-brand-300"
         :class="{ 'rotate-180': isProfileOpen }"
       />
     </button>
@@ -86,13 +86,13 @@ const profileItems = computed<ProfileItem[]>(() => [
       <div
         v-show="isProfileOpen"
         ref="profileDropdownRef"
-        class="absolute right-0 mt-2 w-56 origin-top-right overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
+        class="absolute right-0 mt-2 w-56 origin-top-right overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-brand-700 dark:bg-brand-800"
       >
-        <div class="border-b border-gray-200 p-4 dark:border-gray-700">
-          <p class="text-sm font-medium text-gray-900 dark:text-white">
+        <div class="border-b border-gray-200 p-4 dark:border-brand-700">
+          <p class="text-sm font-medium text-brand-900 dark:text-white">
             {{ user?.name || 'John Doe' }}
           </p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-sm text-brand-500 dark:text-brand-200">
             {{ user?.email || 'john@example.com' }}
           </p>
         </div>
@@ -101,7 +101,7 @@ const profileItems = computed<ProfileItem[]>(() => [
             <NuxtLink
               v-if="item.to"
               :to="item.to"
-              class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
+              class="flex items-center space-x-2 px-4 py-2 text-sm text-brand-600 hover:bg-brand-50 dark:text-brand-200 dark:hover:bg-brand-700/50"
               @click="closeDropdown"
             >
               <Icon :name="item.icon" class="h-4 w-4" />
@@ -109,7 +109,7 @@ const profileItems = computed<ProfileItem[]>(() => [
             </NuxtLink>
             <button
               v-else
-              class="flex w-full items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50 dark:text-red-400 dark:hover:bg-gray-700/50"
+              class="flex w-full items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-brand-50 dark:text-red-400 dark:hover:bg-brand-700/50"
               @click="item.action"
             >
               <Icon :name="item.icon" class="h-4 w-4" />

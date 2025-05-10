@@ -1,10 +1,11 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { admin } from 'better-auth/plugins'
+import { admin, twoFactor } from 'better-auth/plugins'
 
 import { render } from '@vue-email/render'
 
-import { accountTable, sessionsTable, usersTable, verificationTable } from '~/database/schema'
+import { AUTH_OTP_LENGTH, AUTH_OTP_PERIOD } from '~/constant'
+import { accountTable, sessionsTable, twoFactorTable, usersTable, verificationTable } from '~/database/schema'
 import ResetPasswordTemplate from '~/server/email/resetPasswordTemplate.vue'
 import { useDrizzle } from '~/server/utils/drizzle'
 import sendEmail from '~/server/utils/email'
@@ -32,6 +33,7 @@ const auth = betterAuth({
   advanced: {
     cookiePrefix: 'treeznuxtkit',
   },
+  appName: 'Treez Nuxt Kit',
   database: drizzleAdapter(db, {
     provider: 'mysql', // or "pg", "sqlite"
     schema: {
@@ -39,6 +41,7 @@ const auth = betterAuth({
       sessions: sessionsTable,
       users: usersTable,
       verifications: verificationTable,
+      twoFactors: twoFactorTable,
     },
     usePlural: true,
   }),
@@ -68,6 +71,21 @@ const auth = betterAuth({
     admin({
       defaultRole: 'user',
       adminRoles: ['admin', 'superadmin'],
+    }),
+    twoFactor({
+      totpOptions: {
+        digits: AUTH_OTP_LENGTH,
+        period: AUTH_OTP_PERIOD,
+      },
+      schema: {
+        twoFactor: {
+          fields: {
+            userId: 'user_id',
+            secret: 'secret',
+            backupCodes: 'backupCodes',
+          },
+        },
+      },
     }),
   ],
   rateLimit: {
