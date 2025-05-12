@@ -47,16 +47,6 @@ const openBanModal = (user: InferUserClient) => {
   bannedModal.value = true
 }
 
-const onSubmitBanAction = async () => {
-  if (!selectedUser.value) return
-
-  if (selectedUser.value.banned) {
-    await onSubmitUnbanned(selectedUser.value.id)
-  } else {
-    await onSubmitbanned(selectedUser.value.id)
-  }
-}
-
 const onSubmitbanned = async (userId: string) => {
   const { data, error } = await client.admin.banUser({
     userId,
@@ -88,6 +78,16 @@ const onSubmitUnbanned = async (userId: string) => {
     toast.add({ title: 'Failed to unban user', color: 'error' })
   }
 }
+
+const onSubmitBanAction = async () => {
+  if (!selectedUser.value) return
+
+  if (selectedUser.value.banned) {
+    await onSubmitUnbanned(selectedUser.value.id)
+  } else {
+    await onSubmitbanned(selectedUser.value.id)
+  }
+}
 </script>
 
 <template>
@@ -97,7 +97,7 @@ const onSubmitUnbanned = async (userId: string) => {
     :description="`Are you sure you want to ${selectedUser?.banned ? 'unban' : 'ban'} this user?`"
     close-icon="i-lucide-x"
     :ui="{ footer: 'justify-end' }"
-    class="w-full bg-primary"
+    class="w-full"
     @close="bannedModal = false"
   >
     <UButton

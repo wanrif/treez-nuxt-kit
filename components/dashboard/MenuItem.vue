@@ -30,8 +30,8 @@ onClickOutside(itemRef, () => {
       v-if="item.to"
       :to="item.to"
       :class="[
-        'flex items-center px-6 py-3 text-brand-600 dark:text-brand-300',
-        'relative cursor-pointer overflow-hidden hover:bg-blue-100 dark:hover:bg-brand-700/50',
+        'flex items-center rounded-lg px-6 py-3 text-treez-600 dark:text-treez-300',
+        'relative cursor-pointer overflow-hidden hover:bg-blue-100 dark:hover:bg-treez-900',
         'transform-gpu transition-all duration-300 ease-in-out',
         isExpanded || isMobile ? 'gap-x-3' : 'justify-center',
       ]"
@@ -50,8 +50,8 @@ onClickOutside(itemRef, () => {
     <div
       v-else
       :class="[
-        'flex items-center px-6 py-3 text-brand-600 dark:text-brand-300',
-        'relative cursor-pointer overflow-hidden hover:bg-blue-100 dark:hover:bg-brand-700/50',
+        'flex items-center rounded-lg px-6 py-3 text-treez-600 dark:text-treez-300',
+        'relative cursor-pointer overflow-hidden hover:bg-blue-100 dark:hover:bg-treez-900',
         'transform-gpu transition-all duration-300 ease-in-out',
         isExpanded || isMobile ? 'gap-x-3' : 'justify-center',
       ]"
@@ -85,7 +85,7 @@ onClickOutside(itemRef, () => {
     <!-- Tooltip for collapsed state -->
     <div
       v-if="!isMobile && !isExpanded && !item.subMenu"
-      class="absolute top-1/2 left-full z-[999] mx-2 -translate-y-1/2 scale-95 rounded-md bg-brand-900 px-2 py-1 text-sm whitespace-nowrap text-white opacity-0 shadow-lg transition-all duration-200 ease-in-out group-hover/menu:scale-100 group-hover/menu:opacity-100"
+      class="absolute top-1/2 left-full z-[999] mx-2 -translate-y-1/2 scale-95 rounded-md bg-treez-900 px-2 py-1 text-sm whitespace-nowrap text-white opacity-0 shadow-lg transition-all duration-200 ease-in-out group-hover/menu:scale-100 group-hover/menu:opacity-100"
     >
       {{ item.label }}
     </div>
@@ -98,14 +98,14 @@ onClickOutside(itemRef, () => {
     >
       <div
         v-if="item.subMenu && (isExpanded || isMobile) && isActive"
-        class="overflow-hidden bg-blue-50/50 transition-all duration-300 dark:bg-brand-700/25"
+        class="mt-2 overflow-hidden rounded-lg bg-treez-50/50 transition-all duration-300 dark:bg-treez-900"
       >
         <TransitionGroup name="submenu-items" tag="div" class="space-y-1 py-2">
           <NuxtLink
             v-for="subItem in item.subMenu"
             :key="subItem.label"
             :to="subItem.to"
-            class="group flex items-center py-2 pr-4 pl-14 text-sm text-brand-600 transition-all duration-200 hover:bg-white/50 hover:text-blue-600 dark:text-brand-400 dark:hover:bg-brand-700/50 dark:hover:text-blue-400"
+            class="group flex items-center py-2 pr-4 pl-14 text-sm text-treez-600 transition-all duration-200 hover:bg-white/50 hover:text-blue-600 dark:text-treez-400 dark:hover:bg-treez-950 dark:hover:text-blue-400"
           >
             <Icon :name="subItem.icon" class="mr-2 h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
             <span class="transition-transform duration-200 group-hover:translate-x-1">

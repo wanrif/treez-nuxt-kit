@@ -19,11 +19,7 @@ useHead({
 const { t } = useI18n()
 const localePath = useLocalePath()
 const { fields, errors, isSubmitting, meta, error, submit } = useRegisterForm()
-const mounted = ref(false)
-
-onMounted(() => {
-  mounted.value = true
-})
+const isMounted = useMounted()
 </script>
 
 <template>
@@ -37,7 +33,7 @@ onMounted(() => {
         <p class="mt-2 text-gray-600 dark:text-gray-300">{{ t('register_welcome') }}</p>
       </div>
 
-      <form v-if="mounted" class="mt-8 flex flex-col gap-6" @submit.prevent="submit">
+      <form v-if="isMounted" class="mt-8 flex flex-col gap-6" @submit.prevent="submit">
         <div class="flex flex-col gap-4">
           <template v-for="(field, key) in fields" :key="key">
             <UFormField v-slot="{ error: fieldError }" :label="t(`${key}_label`)" :error="errors[key]">

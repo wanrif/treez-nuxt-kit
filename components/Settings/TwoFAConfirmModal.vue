@@ -144,7 +144,7 @@ const onSubmit = handleSubmit(async (values) => {
     <template #body>
       <div class="space-y-6 p-4">
         <div>
-          <p class="mb-2 text-sm text-brand-700 dark:text-brand-300">
+          <p class="mb-2 text-sm text-treez-700 dark:text-treez-300">
             {{ t('two_factor_scan_qr_instruction') }}
           </p>
           <div class="flex justify-center">
@@ -152,25 +152,25 @@ const onSubmit = handleSubmit(async (values) => {
               v-if="qrcode"
               :src="qrcode"
               alt="Two FA QR Code"
-              class="h-48 w-48 rounded-lg border border-brand-200 p-2 dark:border-brand-700"
+              class="h-48 w-48 rounded-lg border border-treez-200 p-2 dark:border-treez-700"
             />
             <div
               v-else
-              class="flex h-48 w-48 items-center justify-center rounded-lg border border-brand-200 bg-brand-50 dark:border-brand-700 dark:bg-brand-800"
+              class="flex h-48 w-48 items-center justify-center rounded-lg border border-treez-200 bg-treez-50 dark:border-treez-700 dark:bg-treez-800"
             >
-              <UIcon name="i-heroicons-qr-code" class="h-16 w-16 text-brand-400 dark:text-brand-500" />
+              <UIcon name="i-heroicons-qr-code" class="h-16 w-16 text-treez-400 dark:text-treez-500" />
             </div>
           </div>
         </div>
 
         <div class="mt-4">
-          <p class="mb-1 text-sm text-brand-700 dark:text-brand-300">
+          <p class="mb-1 text-sm text-treez-700 dark:text-treez-300">
             {{ t('two_factor_manual_entry_instruction') }}
           </p>
           <div
-            class="flex items-center justify-between rounded-lg border border-brand-200 bg-brand-50 p-3 text-pretty dark:border-brand-700 dark:bg-brand-800/50"
+            class="flex items-center justify-between rounded-lg border border-treez-200 bg-treez-50 p-3 text-pretty dark:border-treez-700 dark:bg-treez-800/50"
           >
-            <span class="font-mono text-sm text-pretty break-all text-brand-700 dark:text-brand-300">{{
+            <span class="font-mono text-sm text-pretty break-all text-treez-700 dark:text-treez-300">{{
               props.totpURI
             }}</span>
             <UButton
@@ -184,18 +184,18 @@ const onSubmit = handleSubmit(async (values) => {
         </div>
 
         <div>
-          <h3 class="mb-2 text-sm font-semibold text-brand-800 dark:text-brand-200">
+          <h3 class="mb-2 text-sm font-semibold text-treez-800 dark:text-treez-200">
             {{ t('two_factor_backup_codes_title') }}
           </h3>
-          <p class="mb-3 text-xs text-brand-600 dark:text-brand-400">
+          <p class="mb-3 text-xs text-treez-600 dark:text-treez-400">
             {{ t('two_factor_backup_codes_instruction') }}
           </p>
-          <div class="rounded-lg border border-brand-200 bg-brand-50 p-3 dark:border-brand-700 dark:bg-brand-800/50">
+          <div class="rounded-lg border border-treez-200 bg-treez-50 p-3 dark:border-treez-700 dark:bg-treez-800/50">
             <div class="grid grid-cols-2 gap-x-4 gap-y-1">
               <span
                 v-for="code in props.backupCodes"
                 :key="code"
-                class="font-mono text-sm text-brand-700 dark:text-brand-300"
+                class="font-mono text-sm text-treez-700 dark:text-treez-300"
               >
                 {{ code }}
               </span>
@@ -220,7 +220,7 @@ const onSubmit = handleSubmit(async (values) => {
         </div>
 
         <div>
-          <p class="mb-2 text-sm text-brand-700 dark:text-brand-300">
+          <p class="mb-2 text-sm text-treez-700 dark:text-treez-300">
             {{ t('two_factor_enter_code_instruction') }}
           </p>
           <UFormField required :error="errors.code" :label="t('two_factor_code_label')">

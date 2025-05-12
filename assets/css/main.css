@@ -32,6 +32,52 @@
   scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
 }
 
+:root {
+  --ui-info: var(--color-blue-600);
+
+  --ui-text-dimmed: var(--color-treez-400);
+  --ui-text-muted: var(--color-treez-500);
+  --ui-text-toned: var(--color-treez-600);
+  --ui-text: var(--color-treez-700);
+  --ui-text-highlighted: var(--color-treez-950);
+  --ui-text-inverted: var(--color-white);
+
+  --ui-bg: var(--color-white);
+  --ui-bg-muted: var(--color-treez-50);
+  --ui-bg-elevated: var(--color-treez-100);
+  --ui-bg-accented: var(--color-treez-200);
+  --ui-bg-inverted: var(--color-treez-950);
+
+  --ui-border: var(--color-treez-200);
+  --ui-border-muted: var(--color-treez-200);
+  --ui-border-accented: var(--color-treez-200);
+  --ui-border-inverted: var(--color-treez-950);
+
+  --ui-radius: 0.25rem;
+}
+
+.dark {
+  --ui-info: var(--color-blue-600);
+
+  --ui-text-dimmed: var(--color-treez-500);
+  --ui-text-muted: var(--color-treez-400);
+  --ui-text-toned: var(--color-treez-300);
+  --ui-text: var(--color-treez-200);
+  --ui-text-highlighted: var(--color-white);
+  --ui-text-inverted: var(--color-treez-950);
+
+  --ui-bg: var(--color-treez-950);
+  --ui-bg-muted: var(--color-treez-900);
+  --ui-bg-elevated: var(--color-treez-800);
+  --ui-bg-accented: var(--color-treez-800);
+  --ui-bg-inverted: var(--color-white);
+
+  --ui-border: var(--color-treez-800);
+  --ui-border-muted: var(--color-treez-800);
+  --ui-border-accented: var(--color-treez-800);
+  --ui-border-inverted: var(--color-white);
+}
+
 @theme {
   --font-sans:
     'Sofia Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
@@ -39,18 +85,43 @@
   --font-bungee:
     'Bungee', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-  --color-brand: oklch(27.489% 0.01881 258.37);
-  --color-brand-50: oklch(87.182% 0.01353 262.38);
-  --color-brand-100: oklch(84.001% 0.01714 259.42);
-  --color-brand-200: oklch(77.315% 0.02414 258.37);
-  --color-brand-300: oklch(70.423% 0.03207 256.05);
-  --color-brand-400: oklch(63.28% 0.04208 259.26);
-  --color-brand-500: oklch(56.442% 0.04578 257.53);
-  --color-brand-600: oklch(49.563% 0.03989 257.86);
-  --color-brand-700: oklch(42.435% 0.03377 258.36);
-  --color-brand-800: oklch(35.331% 0.02573 257.52);
-  --color-brand-900: oklch(27.489% 0.01881 258.37);
-  --color-brand-950: oklch(21.733% 0.01266 264.27);
+  --color-treez-50: oklch(88.213% 0.01284 254.32);
+  --color-treez-100: oklch(83.671% 0.01625 252.56);
+  --color-treez-200: oklch(76.982% 0.02342 251.83);
+  --color-treez-300: oklch(69.157% 0.03165 250.74);
+  --color-treez-400: oklch(61.593% 0.04018 249.87);
+  --color-treez-500: oklch(53.876% 0.04396 248.93);
+  --color-treez-600: oklch(46.238% 0.03812 247.64);
+  --color-treez-700: oklch(38.729% 0.03104 246.82);
+  --color-treez-800: oklch(30.982% 0.02385 245.91);
+  --color-treez-900: oklch(23.457% 0.01732 244.73);
+  --color-treez-950: oklch(18.124% 0.01164 243.58);
+
+  /* --color-treez: oklch(24.816% 0.00928 234.12);
+  --color-treez-50: oklch(88.291% 0.00877 247.93);
+  --color-treez-100: oklch(85.087% 0.01133 243.68);
+  --color-treez-200: oklch(78.67% 0.01591 241.83);
+  --color-treez-300: oklch(72.129% 0.02069 240.85);
+  --color-treez-400: oklch(65.485% 0.02675 242.55);
+  --color-treez-500: oklch(58.688% 0.03015 241.49);
+  --color-treez-600: oklch(51.614% 0.02634 242.27);
+  --color-treez-700: oklch(44.287% 0.02238 243.38);
+  --color-treez-800: oklch(36.898% 0.01787 238.53);
+  --color-treez-900: oklch(28.934% 0.01247 243.28);
+  --color-treez-950: oklch(24.816% 0.00928 234.12); */
+
+  /* --color-treez: oklch(58.537% 0.0267 244.4);
+  --color-treez-50: oklch(94.514% 0.00345 247.86);
+  --color-treez-100: oklch(91.439% 0.00521 247.88);
+  --color-treez-200: oklch(85.133% 0.00957 242.86);
+  --color-treez-300: oklch(78.792% 0.01335 244.3);
+  --color-treez-400: oklch(72.249% 0.01807 242.53);
+  --color-treez-500: oklch(65.531% 0.02199 238.85);
+  --color-treez-600: oklch(58.537% 0.0267 244.4);
+  --color-treez-700: oklch(48.954% 0.02186 243.3);
+  --color-treez-800: oklch(38.832% 0.01558 237.05);
+  --color-treez-900: oklch(27.762% 0.01029 242.06);
+  --color-treez-950: oklch(22.024% 0.00744 248.17); */
 }
 
 @theme default {
@@ -137,48 +208,51 @@
   --color-neutral-800: var(--ui-color-neutral-800);
   --color-neutral-900: var(--ui-color-neutral-900);
   --color-neutral-950: var(--ui-color-neutral-950);
-}
 
-:root {
-  --ui-info: var(--color-blue-600);
+  --text-color-dimmed: var(--ui-text-dimmed);
+  --text-color-muted: var(--ui-text-muted);
+  --text-color-toned: var(--ui-text-toned);
+  --text-color-default: var(--ui-text);
+  --text-color-highlighted: var(--ui-text-highlighted);
+  --text-color-inverted: var(--ui-text-inverted);
+  --background-color-default: var(--ui-bg);
+  --background-color-muted: var(--ui-bg-muted);
+  --background-color-elevated: var(--ui-bg-elevated);
+  --background-color-accented: var(--ui-bg-accented);
+  --background-color-inverted: var(--ui-bg-inverted);
+  --background-color-border: var(--ui-border);
+  --border-color-default: var(--ui-border);
+  --border-color-muted: var(--ui-border-muted);
+  --border-color-accented: var(--ui-border-accented);
+  --border-color-inverted: var(--ui-border-inverted);
+  --border-color-bg: var(--ui-bg);
+  --ring-color-default: var(--ui-border);
+  --ring-color-muted: var(--ui-border-muted);
+  --ring-color-accented: var(--ui-border-accented);
+  --ring-color-inverted: var(--ui-border-inverted);
+  --ring-color-bg: var(--ui-bg);
+  --ring-offset-color-default: var(--ui-border);
+  --ring-offset-color-muted: var(--ui-border-muted);
+  --ring-offset-color-accented: var(--ui-border-accented);
+  --ring-offset-color-inverted: var(--ui-border-inverted);
+  --ring-offset-color-bg: var(--ui-bg);
+  --divide-color-default: var(--ui-border);
+  --divide-color-muted: var(--ui-border-muted);
+  --divide-color-accented: var(--ui-border-accented);
+  --divide-color-inverted: var(--ui-border-inverted);
+  --divide-color-bg: var(--ui-bg);
+  --outline-color-default: var(--ui-border);
+  --outline-color-inverted: var(--ui-border-inverted);
+  --stroke-color-default: var(--ui-border);
+  --stroke-color-inverted: var(--ui-border-inverted);
+  --fill-color-default: var(--ui-border);
+  --fill-color-inverted: var(--ui-border-inverted);
 
-  --ui-text-dimmed: var(--color-brand-400);
-  --ui-text-muted: var(--color-brand-500);
-  --ui-text-toned: var(--color-brand-600);
-  --ui-text: var(--color-brand-700);
-  --ui-text-highlighted: var(--color-brand-900);
-  --ui-text-inverted: var(--color-white);
-
-  --ui-bg: var(--color-white);
-  --ui-bg-muted: var(--color-brand-50);
-  --ui-bg-elevated: var(--color-brand-100);
-  --ui-bg-accented: var(--color-brand-200);
-  --ui-bg-inverted: var(--color-brand-900);
-
-  --ui-border: var(--color-brand-200);
-  --ui-border-muted: var(--color-brand-200);
-  --ui-border-accented: var(--color-brand-300);
-  --ui-border-inverted: var(--color-brand-900);
-}
-
-.dark {
-  --ui-info: var(--color-blue-600);
-
-  --ui-text-dimmed: var(--color-brand-500);
-  --ui-text-muted: var(--color-brand-400);
-  --ui-text-toned: var(--color-brand-300);
-  --ui-text: var(--color-brand-200);
-  --ui-text-highlighted: var(--color-white);
-  --ui-text-inverted: var(--color-brand-900);
-
-  --ui-bg: var(--color-brand-900);
-  --ui-bg-muted: var(--color-brand-800);
-  --ui-bg-elevated: var(--color-brand-800);
-  --ui-bg-accented: var(--color-brand-700);
-  --ui-bg-inverted: var(--color-white);
-
-  --ui-border: var(--color-brand-800);
-  --ui-border-muted: var(--color-brand-700);
-  --ui-border-accented: var(--color-brand-700);
-  --ui-border-inverted: var(--color-white);
+  --radius-xs: calc(var(--ui-radius) * 0.5); /* 0.125rem */
+  --radius-sm: var(--ui-radius); /* 0.25rem */
+  --radius-md: calc(var(--ui-radius) * 1.5); /* 0.375rem */
+  --radius-lg: calc(var(--ui-radius) * 2); /* 0.5rem */
+  --radius-xl: calc(var(--ui-radius) * 3); /* 0.75rem */
+  --radius-2xl: calc(var(--ui-radius) * 4); /* 1rem */
+  --radius-3xl: calc(var(--ui-radius) * 6); /* 1.5rem */
 }

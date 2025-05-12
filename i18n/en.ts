@@ -243,4 +243,7 @@ export default {
   validation_two_factor_code_length: 'Verification code must be 6 digits',
   validation_two_factor_code_numeric: 'Verification code must be 6 digits',
   validation_recovery_code_required: 'Recovery code is required',
+
+  verified: 'Verified',
+  unverified: 'Unverified',
 }

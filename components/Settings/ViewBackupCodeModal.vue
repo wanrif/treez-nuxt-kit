@@ -89,7 +89,7 @@ watch(internalOpen, (value) => {
   <UModal v-model:open="internalOpen" :prevent-close="false" :title="t('settings_view_backup_codes')">
     <template #body>
       <div class="p-4">
-        <p class="mb-4 text-sm text-brand-500 dark:text-brand-100">
+        <p class="mb-4 text-sm text-treez-500 dark:text-treez-100">
           {{ t('settings_view_backup_codes_instruction') }}
         </p>
         <UAlert
@@ -105,7 +105,7 @@ watch(internalOpen, (value) => {
             <div
               v-for="(code, index) in backupCodes"
               :key="index"
-              class="rounded-md bg-brand-100 p-3 text-center font-mono text-lg dark:bg-brand-800"
+              class="rounded-md bg-treez-100 p-3 text-center font-mono text-lg dark:bg-treez-800"
             >
               {{ code }}
             </div>
@@ -126,8 +126,8 @@ watch(internalOpen, (value) => {
           </div>
         </div>
         <div v-else class="py-8 text-center">
-          <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl text-brand-500 dark:text-brand-400" />
-          <p class="mt-2 text-sm text-brand-500 dark:text-brand-400">
+          <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl text-treez-500 dark:text-treez-400" />
+          <p class="mt-2 text-sm text-treez-500 dark:text-treez-400">
             {{ t('loading') }}
           </p>
         </div>

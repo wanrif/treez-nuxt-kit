@@ -20,7 +20,7 @@ const sizeClass = computed(() => {
   <Transition name="fade">
     <div
       v-show="show"
-      class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-gray-900/80"
+      class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-treez-950"
     >
       <div class="relative flex flex-col items-center gap-8">
         <!-- Spinner -->

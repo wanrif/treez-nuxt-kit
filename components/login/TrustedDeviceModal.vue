@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
-
 import { AUTH_TRUSTED_PERIOD } from '~/constant'
 
 const props = defineProps({

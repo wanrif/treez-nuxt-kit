@@ -101,7 +101,7 @@ const onSubmit = handleSubmit(async (values) => {
   >
     <template #body>
       <div class="flex flex-col gap-4">
-        <p class="text-brand-600 dark:text-brand-300">
+        <p class="text-treez-600 dark:text-treez-300">
           {{ t(action === 'enable' ? 'enable_2fa_confirm' : 'disable_2fa_confirm') }}
         </p>
         <UFormField v-slot="{ error: fieldError }" :error="errors.password">

@@ -67,14 +67,14 @@ const stats: StatCard[] = [
     <div
       v-for="(stat, index) in stats"
       :key="index"
-      class="rounded-xl border border-gray-200 bg-white/80 p-6 shadow-sm backdrop-blur-md transition-shadow duration-300 hover:shadow-lg dark:border-brand-700 dark:bg-brand-800/80"
+      class="rounded-xl border border-gray-200 bg-white/80 p-6 shadow-sm backdrop-blur-md transition-shadow duration-300 hover:shadow-lg dark:border-default dark:bg-default"
     >
       <div class="flex items-center space-x-4">
         <div :class="['flex items-center justify-center rounded-lg p-3', stat.iconBgColor]">
           <Icon :name="stat.icon" :class="['h-6 w-6', stat.iconTextColor]" />
         </div>
         <div>
-          <h3 class="font-medium text-brand-500 dark:text-brand-400">{{ stat.title }}</h3>
+          <h3 class="font-medium text-treez-500 dark:text-treez-400">{{ stat.title }}</h3>
           <p
             :class="[
               'bg-gradient-to-r bg-clip-text text-2xl font-bold text-transparent',

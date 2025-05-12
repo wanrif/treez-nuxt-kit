@@ -19,11 +19,7 @@ useHead({
 const { t } = useI18n()
 const localePath = useLocalePath()
 const { fields, errors, isSubmitting, error, meta, success, submit } = useForgotPasswordForm()
-const mounted = ref(false)
-
-onMounted(() => {
-  mounted.value = true
-})
+const isMounted = useMounted()
 </script>
 
 <template>
@@ -41,7 +37,7 @@ onMounted(() => {
         </p>
       </div>
 
-      <form v-if="mounted && !success" class="flex flex-col gap-6" @submit.prevent="submit">
+      <form v-if="isMounted && !success" class="flex flex-col gap-6" @submit.prevent="submit">
         <UFormField :label="t('email_label')" :error="errors.email">
           <UInput
             v-model="fields.email.value.value"
