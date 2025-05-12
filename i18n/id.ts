@@ -243,4 +243,7 @@ export default {
   validation_two_factor_code_length: 'Kode verifikasi harus 6 digit',
   validation_two_factor_code_numeric: 'Kode verifikasi harus berupa 6 digit angka',
   validation_recovery_code_required: 'Kode pemulihan wajib diisi',
+
+  verified: 'Terverifikasi',
+  unverified: 'Belum Terverifikasi',
 }

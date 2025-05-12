@@ -2,7 +2,256 @@ export default defineAppConfig({
   ui: {
     colors: {
       primary: 'emerald',
-      neutral: 'brand',
+      neutral: 'treez',
+    },
+    button: {
+      slots: {
+        base: [
+          'rounded-md font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75',
+          'transition-colors',
+        ],
+        label: 'truncate',
+        leadingIcon: 'shrink-0',
+        leadingAvatar: 'shrink-0',
+        leadingAvatarSize: '',
+        trailingIcon: 'shrink-0',
+      },
+      variants: {
+        buttonGroup: {
+          horizontal: 'not-only:first:rounded-e-none not-only:last:rounded-s-none not-last:not-first:rounded-none',
+          vertical: 'not-only:first:rounded-b-none not-only:last:rounded-t-none not-last:not-first:rounded-none',
+        },
+        color: {
+          primary: '',
+          secondary: '',
+          success: '',
+          info: '',
+          warning: '',
+          error: '',
+          neutral: '',
+        },
+        variant: {
+          solid: '',
+          outline: '',
+          soft: '',
+          subtle: '',
+          ghost: '',
+          link: '',
+        },
+        size: {
+          xs: {
+            base: 'px-2 py-1 text-xs gap-1',
+            leadingIcon: 'size-4',
+            leadingAvatarSize: '3xs',
+            trailingIcon: 'size-4',
+          },
+          sm: {
+            base: 'px-2.5 py-1.5 text-xs gap-1.5',
+            leadingIcon: 'size-4',
+            leadingAvatarSize: '3xs',
+            trailingIcon: 'size-4',
+          },
+          md: {
+            base: 'px-2.5 py-1.5 text-sm gap-1.5',
+            leadingIcon: 'size-5',
+            leadingAvatarSize: '2xs',
+            trailingIcon: 'size-5',
+          },
+          lg: {
+            base: 'px-3 py-2 text-sm gap-2',
+            leadingIcon: 'size-5',
+            leadingAvatarSize: '2xs',
+            trailingIcon: 'size-5',
+          },
+          xl: {
+            base: 'px-3 py-2 text-base gap-2',
+            leadingIcon: 'size-6',
+            leadingAvatarSize: 'xs',
+            trailingIcon: 'size-6',
+          },
+        },
+        block: {
+          true: {
+            base: 'w-full justify-center',
+            trailingIcon: 'ms-auto',
+          },
+        },
+        square: {
+          true: '',
+        },
+        leading: {
+          true: '',
+        },
+        trailing: {
+          true: '',
+        },
+        loading: {
+          true: '',
+        },
+        active: {
+          true: {
+            base: '',
+          },
+          false: {
+            base: '',
+          },
+        },
+      },
+      compoundVariants: [
+        {
+          color: 'primary',
+          variant: 'solid',
+          class:
+            'text-inverted bg-primary hover:bg-primary/75 disabled:bg-primary aria-disabled:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+        },
+        {
+          color: 'primary',
+          variant: 'outline',
+          class:
+            'ring ring-inset ring-primary/50 text-primary hover:bg-primary/10 disabled:bg-transparent aria-disabled:bg-transparent dark:disabled:bg-transparent dark:aria-disabled:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        },
+        {
+          color: 'primary',
+          variant: 'soft',
+          class:
+            'text-primary bg-primary/10 hover:bg-primary/15 focus:outline-none focus-visible:bg-primary/15 disabled:bg-primary/10 aria-disabled:bg-primary/10',
+        },
+        {
+          color: 'primary',
+          variant: 'subtle',
+          class:
+            'text-primary ring ring-inset ring-primary/25 bg-primary/10 hover:bg-primary/15 disabled:bg-primary/10 aria-disabled:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        },
+        {
+          color: 'primary',
+          variant: 'ghost',
+          class:
+            'text-primary hover:bg-primary/10 focus:outline-none focus-visible:bg-primary/10 disabled:bg-transparent aria-disabled:bg-transparent dark:disabled:bg-transparent dark:aria-disabled:bg-transparent',
+        },
+        {
+          color: 'primary',
+          variant: 'link',
+          class:
+            'text-primary hover:text-primary/75 disabled:text-primary aria-disabled:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+        },
+        {
+          color: 'neutral',
+          variant: 'solid',
+          class:
+            'text-inverted bg-inverted hover:bg-inverted/90 disabled:bg-inverted aria-disabled:bg-inverted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-inverted',
+        },
+        {
+          color: 'neutral',
+          variant: 'outline',
+          class:
+            'ring ring-inset ring-accented text-default bg-default hover:bg-elevated disabled:bg-default aria-disabled:bg-default focus:outline-none focus-visible:ring-2 focus-visible:ring-inverted',
+        },
+        {
+          color: 'neutral',
+          variant: 'soft',
+          class:
+            'text-default bg-elevated hover:bg-accented/75 focus:outline-none focus-visible:bg-accented/75 disabled:bg-elevated aria-disabled:bg-elevated',
+        },
+        {
+          color: 'neutral',
+          variant: 'subtle',
+          class:
+            'ring ring-inset ring-accented text-default bg-elevated hover:bg-accented/75 disabled:bg-elevated aria-disabled:bg-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-inverted',
+        },
+        {
+          color: 'neutral',
+          variant: 'ghost',
+          class:
+            'text-default hover:bg-elevated focus:outline-none focus-visible:bg-elevated hover:disabled:bg-transparent dark:hover:disabled:bg-transparent hover:aria-disabled:bg-transparent dark:hover:aria-disabled:bg-transparent',
+        },
+        {
+          color: 'neutral',
+          variant: 'link',
+          class:
+            'text-muted hover:text-default disabled:text-muted aria-disabled:text-muted focus:outline-none focus-visible:ring-inset focus-visible:ring-2 focus-visible:ring-inverted',
+        },
+        {
+          color: 'error',
+          variant: 'solid',
+          class:
+            'text-inverted bg-error hover:bg-error/75 disabled:bg-error aria-disabled:bg-error focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error',
+        },
+        {
+          color: 'error',
+          variant: 'outline',
+          class:
+            'ring ring-inset ring-error/50 text-error hover:bg-error/10 disabled:bg-transparent aria-disabled:bg-transparent dark:disabled:bg-transparent dark:aria-disabled:bg-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-error',
+        },
+        {
+          color: 'error',
+          variant: 'soft',
+          class:
+            'text-error bg-error/10 hover:bg-error/15 focus:outline-none focus-visible:bg-error/15 disabled:bg-error/10 aria-disabled:bg-error/10',
+        },
+        {
+          color: 'error',
+          variant: 'subtle',
+          class:
+            'text-error ring ring-inset ring-error/25 bg-error/10 hover:bg-error/15 disabled:bg-error/10 aria-disabled:bg-error/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-error',
+        },
+        {
+          color: 'error',
+          variant: 'ghost',
+          class:
+            'text-error hover:bg-error/10 focus:outline-none focus-visible:bg-error/10 disabled:bg-transparent aria-disabled:bg-transparent dark:disabled:bg-transparent dark:aria-disabled:bg-transparent',
+        },
+        {
+          color: 'error',
+          variant: 'link',
+          class:
+            'text-error hover:text-error/75 disabled:text-error aria-disabled:text-error focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-error',
+        },
+        {
+          size: 'xs',
+          square: true,
+          class: 'p-1',
+        },
+        {
+          size: 'sm',
+          square: true,
+          class: 'p-1.5',
+        },
+        {
+          size: 'md',
+          square: true,
+          class: 'p-1.5',
+        },
+        {
+          size: 'lg',
+          square: true,
+          class: 'p-2',
+        },
+        {
+          size: 'xl',
+          square: true,
+          class: 'p-2',
+        },
+        {
+          loading: true,
+          leading: true,
+          class: {
+            leadingIcon: 'animate-spin',
+          },
+        },
+        {
+          loading: true,
+          leading: false,
+          trailing: true,
+          class: {
+            trailingIcon: 'animate-spin',
+          },
+        },
+      ],
+      defaultVariants: {
+        color: 'primary',
+        variant: 'solid',
+        size: 'md',
+      },
     },
     input: {
       slots: {
@@ -227,6 +476,176 @@ export default defineAppConfig({
               'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] max-w-lg max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-4rem)] rounded-lg shadow-lg',
           },
         },
+      },
+    },
+    table: {
+      slots: {
+        root: 'relative overflow-auto',
+        base: 'min-w-full overflow-clip bg-(--ui-bg)',
+        caption: 'sr-only',
+        thead:
+          'relative [&>tr]:after:absolute [&>tr]:after:inset-x-0 [&>tr]:after:bottom-0 [&>tr]:after:h-px [&>tr]:after:bg-(--ui-border-accented)',
+        tbody:
+          'divide-y divide-default [&>tr]:data-[selectable=true]:hover:bg-primary-50 [&>tr]:data-[selectable=true]:focus-visible:outline-primary dark:[&>tr]:data-[selectable=true]:hover:bg-primary-950/30',
+        tr: 'data-[selected=true]:bg-primary-50 dark:data-[selected=true]:bg-primary-950/30',
+        th: 'px-4 py-3.5 text-sm text-highlighted text-left rtl:text-right font-semibold [&:has([role=checkbox])]:pe-0',
+        td: 'p-4 text-sm text-muted whitespace-nowrap [&:has([role=checkbox])]:pe-0',
+        empty: 'py-6 text-center text-sm text-muted',
+        loading: 'py-6 text-center',
+      },
+      variants: {
+        pinned: {
+          true: {
+            th: 'sticky bg-default/75 data-[pinned=left]:left-0 data-[pinned=right]:right-0',
+            td: 'sticky bg-default/75 data-[pinned=left]:left-0 data-[pinned=right]:right-0',
+          },
+        },
+        sticky: {
+          true: {
+            thead: 'sticky top-0 inset-x-0 bg-default/75 z-[1] backdrop-blur',
+          },
+        },
+        loading: {
+          true: {
+            thead: 'after:absolute after:bottom-0 after:inset-x-0 after:h-px',
+          },
+        },
+        loadingAnimation: {
+          carousel: '',
+          'carousel-inverse': '',
+          swing: '',
+          elastic: '',
+        },
+        loadingColor: {
+          primary: '',
+          secondary: '',
+          success: '',
+          info: '',
+          warning: '',
+          error: '',
+          neutral: '',
+        },
+      },
+      compoundVariants: [
+        {
+          loading: true,
+          loadingColor: 'primary',
+          class: {
+            thead: 'after:bg-primary',
+          },
+        },
+        {
+          loading: true,
+          loadingColor: 'neutral',
+          class: {
+            thead: 'after:bg-inverted',
+          },
+        },
+        {
+          loading: true,
+          loadingAnimation: 'carousel',
+          class: {
+            thead:
+              'after:animate-[carousel_2s_ease-in-out_infinite] rtl:after:animate-[carousel-rtl_2s_ease-in-out_infinite]',
+          },
+        },
+        {
+          loading: true,
+          loadingAnimation: 'carousel-inverse',
+          class: {
+            thead:
+              'after:animate-[carousel-inverse_2s_ease-in-out_infinite] rtl:after:animate-[carousel-inverse-rtl_2s_ease-in-out_infinite]',
+          },
+        },
+        {
+          loading: true,
+          loadingAnimation: 'swing',
+          class: {
+            thead: 'after:animate-[swing_2s_ease-in-out_infinite]',
+          },
+        },
+        {
+          loading: true,
+          loadingAnimation: 'elastic',
+          class: {
+            thead: 'after:animate-[elastic_2s_ease-in-out_infinite]',
+          },
+        },
+      ],
+      defaultVariants: {
+        loadingColor: 'primary',
+        loadingAnimation: 'carousel',
+      },
+    },
+    toast: {
+      slots: {
+        root: 'relative group overflow-hidden bg-default shadow-lg rounded-lg ring ring-treez-50/50 dark:ring-treez-900 p-4 flex gap-2.5 focus:outline-none',
+        wrapper: 'w-0 flex-1 flex flex-col',
+        title: 'text-sm font-medium text-highlighted',
+        description: 'text-sm text-muted',
+        icon: 'shrink-0 size-5',
+        avatar: 'shrink-0',
+        avatarSize: '2xl',
+        actions: 'flex gap-1.5 shrink-0',
+        progress: 'absolute inset-x-0 bottom-0 h-1 z-[-1]',
+        close: 'p-0',
+      },
+      variants: {
+        color: {
+          primary: {
+            root: 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary',
+            icon: 'text-primary',
+            progress: 'bg-primary',
+          },
+          secondary: {
+            root: 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-secondary',
+            icon: 'text-secondary',
+            progress: 'bg-secondary',
+          },
+          success: {
+            root: 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-success',
+            icon: 'text-success',
+            progress: 'bg-success',
+          },
+          info: {
+            root: 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-info',
+            icon: 'text-info',
+            progress: 'bg-info',
+          },
+          warning: {
+            root: 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-warning',
+            icon: 'text-warning',
+            progress: 'bg-warning',
+          },
+          error: {
+            root: 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-error',
+            icon: 'text-error',
+            progress: 'bg-error',
+          },
+          neutral: {
+            root: 'focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-inverted',
+            icon: 'text-highlighted',
+            progress: 'bg-inverted',
+          },
+        },
+        orientation: {
+          horizontal: {
+            root: 'items-center',
+            actions: 'items-center',
+          },
+          vertical: {
+            root: 'items-start',
+            actions: 'items-start mt-2.5',
+          },
+        },
+        title: {
+          true: {
+            description: 'mt-1',
+          },
+        },
+      },
+      defaultVariants: {
+        color: 'primary',
       },
     },
   },

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const { isDark, updateTheme } = useThemeManager()
 const isAnimating = ref(false)
-const mounted = ref(false)
+const isMounted = useMounted()
 
 const toggleTheme = () => {
   isAnimating.value = true
@@ -10,15 +10,11 @@ const toggleTheme = () => {
     isAnimating.value = false
   }, 500)
 }
-
-onMounted(() => {
-  mounted.value = true
-})
 </script>
 
 <template>
   <UButton
-    v-if="mounted"
+    v-if="isMounted"
     :icon="isDark ? 'i-heroicons-moon-20-solid' : 'i-heroicons-sun-20-solid'"
     variant="ghost"
     aria-label="Theme"

@@ -2,7 +2,7 @@
 const localePath = useLocalePath()
 const { signOut, loggedIn } = useAuth()
 const isOpen = ref(false)
-const mounted = ref(false)
+const isMounted = useMounted()
 
 interface NavLink {
   to: string
@@ -37,10 +37,6 @@ const linkList = computed<NavLink[]>(() => {
   return links
 })
 
-onMounted(() => {
-  mounted.value = true
-})
-
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
 }
@@ -64,21 +60,21 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
           <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
             <span class="font-bungee text-xl text-white">N</span>
           </div>
-          <span class="font-bungee text-xl tracking-wide text-brand-900 dark:text-white">NuxTreez</span>
+          <span class="font-bungee text-xl tracking-wide text-treez-900 dark:text-white">NuxTreez</span>
         </NuxtLink>
 
         <!-- Desktop Navigation -->
         <div class="hidden items-center gap-x-8 md:flex">
-          <template v-if="mounted">
+          <template v-if="isMounted">
             <ULink
               v-for="link in linkList"
               :key="link.to"
               :to="link.onClick ? undefined : link.to"
-              class="flex items-center space-x-2 rounded-lg px-3 py-2 transition-all duration-300 hover:bg-primary-50 dark:hover:bg-brand-800"
+              class="flex items-center space-x-2 rounded-lg px-3 py-2 transition-all duration-300 hover:bg-primary-50 dark:hover:bg-treez-800"
               :class="
                 !link.onClick && link.to === $route.path
                   ? 'text-primary-600 dark:text-primary-400'
-                  : 'text-brand-700 dark:text-brand-300'
+                  : 'text-treez-700 dark:text-treez-300'
               "
               @click="link.onClick ? handleLinkClick(link) : undefined"
             >
@@ -87,41 +83,41 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
             </ULink>
           </template>
 
-          <div v-if="mounted" class="flex items-center space-x-4">
+          <div v-if="isMounted" class="flex items-center space-x-4">
             <ThemeSwitcher />
             <LanguageSwitcher />
           </div>
 
           <template v-else>
             <template v-for="link in linkList" :key="link.to">
-              <USkeleton class="flex items-center space-x-2 rounded-lg bg-brand-200 px-3 py-2 dark:bg-brand-700">
+              <USkeleton class="flex items-center space-x-2 rounded-lg bg-treez-200 px-3 py-2 dark:bg-treez-700">
                 <USkeleton class="h-5 w-5" />
                 <USkeleton class="h-4 w-24" />
               </USkeleton>
             </template>
-            <USkeleton class="h-8 w-8 bg-brand-200 dark:bg-brand-700" />
-            <USkeleton class="h-8 w-8 bg-brand-200 dark:bg-brand-700" />
+            <USkeleton class="h-8 w-8 bg-treez-200 dark:bg-treez-700" />
+            <USkeleton class="h-8 w-8 bg-treez-200 dark:bg-treez-700" />
           </template>
         </div>
 
         <!-- Mobile Menu Button -->
         <div class="flex items-center space-x-4 md:hidden">
-          <template v-if="mounted">
+          <template v-if="isMounted">
             <ThemeSwitcher />
             <LanguageSwitcher />
           </template>
           <button
-            v-if="mounted"
-            class="flex items-center justify-center rounded-lg p-2 transition-colors hover:bg-brand-100 dark:hover:bg-brand-800"
+            v-if="isMounted"
+            class="flex items-center justify-center rounded-lg p-2 transition-colors hover:bg-treez-100 dark:hover:bg-treez-800"
             @click="toggleMenu"
           >
-            <Icon :name="isOpen ? 'ph:x-bold' : 'ph:list-bold'" class="h-6 w-6 text-brand-700 dark:text-brand-300" />
+            <Icon :name="isOpen ? 'ph:x-bold' : 'ph:list-bold'" class="h-6 w-6 text-treez-700 dark:text-treez-300" />
           </button>
         </div>
       </div>
 
       <!-- Mobile Menu -->
-      <template v-if="mounted">
+      <template v-if="isMounted">
         <transition
           enter-active-class="transition duration-200 ease-out"
           enter-from-class="transform -translate-y-2 opacity-0"
@@ -139,8 +135,8 @@ const handleLinkClick = async (link: NavLink, closeMenu = false): Promise<void> 
                 class="flex items-center space-x-2 rounded-lg px-4 py-3 transition-colors"
                 :class="
                   !link.onClick && link.to === $route.path
-                    ? 'bg-primary-50 text-primary-600 dark:bg-brand-800 dark:text-primary-400'
-                    : 'text-brand-700 hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-brand-800'
+                    ? 'bg-primary-50 text-primary-600 dark:bg-treez-800 dark:text-primary-400'
+                    : 'text-treez-700 hover:bg-treez-50 dark:text-treez-300 dark:hover:bg-treez-800'
                 "
                 @click="handleLinkClick(link, true)"
               >

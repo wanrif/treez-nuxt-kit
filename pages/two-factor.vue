@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { AUTH_OTP_LENGTH } from '~/constant'
+
 definePageMeta({
   layout: 'auth',
   auth: {
@@ -85,7 +87,7 @@ const handleModalSubmit = async (trustDeviceChoice: boolean) => {
 
       <div v-if="isMounted" class="flex flex-col gap-6">
         <UFormField v-if="!isUsingRecoveryCode" :error="errors.code" class="flex w-full items-center justify-center">
-          <UPinInput v-model="pinInputModel" otp length="6" />
+          <UPinInput v-model="pinInputModel" otp :length="AUTH_OTP_LENGTH" />
         </UFormField>
         <UFormField v-if="isUsingRecoveryCode" :error="errors.code" :label="t('two_factor_recovery_code_label')">
           <UInput

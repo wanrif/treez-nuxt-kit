@@ -16,6 +16,7 @@ export const useTwoFactorForm = () => {
   const router = useRouter()
   const route = useRoute()
   const localePath = useLocalePath()
+  const toast = useToast()
   const isUsingRecoveryCode = ref(false)
   const showTrustedDeviceModal = ref(false)
   const pendingVerificationData = ref<TwoFactorFormData | null>(null)
@@ -52,43 +53,23 @@ export const useTwoFactorForm = () => {
   } as const
 
   const submit = handleSubmit(async (values) => {
-    try {
-      error.value = ''
-      if (isUsingRecoveryCode.value) {
-        await client.twoFactor.verifyBackupCode(
-          {
-            code: values.code,
+    if (isUsingRecoveryCode.value) {
+      await client.twoFactor.verifyBackupCode(
+        {
+          code: values.code,
+        },
+        {
+          async onSuccess() {
+            await router.push(localePath('/dashboard'))
           },
-          {
-            async onSuccess() {
-              await router.push(localePath('/dashboard'))
-            },
-          }
-        )
-      } else {
-        // If trustDevice is undefined, it means no explicit choice has been made (e.g., via a checkbox).
-        // In this case, we show the modal to ask the user.
-        if (values.trustDevice === undefined) {
-          pendingVerificationData.value = values
-          showTrustedDeviceModal.value = true
-          return // Stop here and wait for modal interaction
         }
-        // If trustDevice is already set (true or false), proceed directly.
-        await client.twoFactor.verifyTotp(
-          {
-            code: values.code,
-            trustDevice: values.trustDevice, // Will be true or false
-          },
-          {
-            async onSuccess() {
-              const redirect = route.query.redirect as string
-              await navigateTo(redirect || localePath('/dashboard'), { replace: true })
-            },
-          }
-        )
+      )
+    } else {
+      if (values.trustDevice === undefined) {
+        pendingVerificationData.value = values
+        showTrustedDeviceModal.value = true
+        return
       }
-    } catch (e: unknown) {
-      error.value = e instanceof Error ? e.message : t('two_factor_verification_failed')
     }
   })
 
@@ -110,6 +91,17 @@ export const useTwoFactorForm = () => {
             const redirect = route.query.redirect as string
             await navigateTo(redirect || localePath('/dashboard'), { replace: true })
           },
+          async onError(context) {
+            if (context.response.status === 401) {
+              toast.add({
+                title: t('two_factor_verification_failed'),
+                description: context.error.message,
+                color: 'error',
+              })
+            } else {
+              error.value = t('error_unknown')
+            }
+          },
         }
       )
     } catch (e: unknown) {
@@ -122,9 +114,8 @@ export const useTwoFactorForm = () => {
   }
 
   const resetCodeField = () => {
-    // Explicitly reset the field's value and clear its errors
     resetForm()
-    error.value = '' // Also clear the general submission error
+    error.value = ''
     showTrustedDeviceModal.value = false
     pendingVerificationData.value = null
     isVerifyingViaModal.value = false

@@ -21,11 +21,7 @@ const localePath = useLocalePath()
 const route = useRoute()
 const token = route.query.token as string
 const { fields, errors, isSubmitting, meta, error, success, submit } = useResetPasswordForm(token)
-const mounted = ref(false)
-
-onMounted(() => {
-  mounted.value = true
-})
+const isMounted = useMounted()
 </script>
 
 <template>
@@ -44,7 +40,7 @@ onMounted(() => {
       </div>
 
       <template v-if="!success">
-        <form v-if="mounted" class="flex flex-col gap-6" @submit.prevent="submit">
+        <form v-if="isMounted" class="flex flex-col gap-6" @submit.prevent="submit">
           <div class="flex flex-col gap-4">
             <UFormField v-slot="{ error: fieldError }" :label="t('new_password')" :error="errors.password">
               <UInput
