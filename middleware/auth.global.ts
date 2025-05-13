@@ -32,6 +32,11 @@ declare module 'vue-router' {
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  // If no route is matched, it's a 404. Let Nuxt handle it.
+  if (to.matched.length === 0) {
+    return
+  }
+
   // If auth is disabled, skip middleware
   if (to.meta?.auth === false) {
     return

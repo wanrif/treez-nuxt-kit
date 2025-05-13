@@ -24,7 +24,8 @@ const UserOptionModal = resolveComponent('UserOptionModal')
 const UCheckbox = resolveComponent('UCheckbox')
 
 const { client, user } = useAuth()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const isMounted = useMounted()
 const usersResponse = ref<UsersResponse | null>(null)
 const loading = ref(false)
 const searchQuery = ref('')
@@ -36,24 +37,12 @@ const statusOptions = ref([
 ])
 
 const pagination = ref({
-  pageIndex: 0,
+  pageIndex: 1,
   pageSize: 5,
 })
 const sorting = ref([
   {
-    id: 'name',
-    desc: false,
-  },
-  {
-    id: 'role',
-    desc: false,
-  },
-  {
-    id: 'status',
-    desc: false,
-  },
-  {
-    id: 'emailVerified',
+    id: 'createdAt',
     desc: false,
   },
 ])
@@ -77,7 +66,7 @@ const fetchUsers = async () => {
     }
     const queryParams: Record<string, string | number> = {
       limit: pagination.value.pageSize,
-      offset: pagination.value.pageIndex * pagination.value.pageSize,
+      offset: (pagination.value.pageIndex - 1) * pagination.value.pageSize,
       sortBy: sorting.value[0].id,
       sortDirection: sorting.value[0].desc ? 'desc' : 'asc',
     }
@@ -255,6 +244,14 @@ const columns: TableColumn<InferUserClient>[] = [
     },
   },
   {
+    id: 'createdAt',
+    header: ({ column }) => getHeader(column, 'Created At'),
+    cell: ({ row }) => {
+      const date = new Date(row.original.createdAt)
+      return h('span', undefined, date.toLocaleDateString(locale.value, { dateStyle: 'medium' }))
+    },
+  },
+  {
     accessorKey: 'action',
     header: () => h('div', { class: 'text-center' }, 'Action'),
     cell: ({ row }) => {
@@ -330,12 +327,15 @@ onMounted(() => {
       />
     </div>
 
-    <div class="overflow-hidden rounded-lg shadow">
+    <div v-if="isMounted" class="overflow-hidden rounded-lg shadow">
       <UTable
         ref="table"
         v-model:pagination="pagination"
         v-model:sorting="sorting"
         v-model:row-selection="rowSelection"
+        :loading="loading"
+        loading-color="primary"
+        loading-animation="carousel"
         :data="users"
         :columns="columns"
         class="flex-1"

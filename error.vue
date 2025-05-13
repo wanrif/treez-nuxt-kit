@@ -61,7 +61,7 @@ const shapes = [
 
         <!-- Error Message -->
         <div class="space-y-4">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 class="text-2xl font-bold text-pretty break-all text-gray-900 dark:text-white">
             {{ props.error?.message || errorMessage }}
           </h2>
           <p class="text-gray-600 dark:text-gray-400">

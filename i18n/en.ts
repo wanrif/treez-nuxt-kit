@@ -244,6 +244,21 @@ export default {
   validation_two_factor_code_numeric: 'Verification code must be 6 digits',
   validation_recovery_code_required: 'Recovery code is required',
 
+  // Email Verification
+  verify_email_title: 'Verify Your Email',
+  verify_email_loading: 'Verifying your email address...',
+  verify_email_success_title: 'Email Verified!',
+  verify_email_success_message:
+    'Your email address has been successfully verified. You can now log in to your account.',
+  verify_email_error_title: 'Verification Failed',
+  verify_email_error_message: 'There was an issue verifying your email. The link may be invalid or expired.',
+  verify_email_invalid_token:
+    'The verification link is invalid or has expired. Please request a new verification email.',
+  verify_email_banned_user_title: 'Account Restricted',
+  verify_email_banned_user_message: 'This account has been restricted. Please contact support for assistance.',
+  go_to_login: 'Go to Login',
+  go_to_dashboard: 'Go to Dashboard',
+
   verified: 'Verified',
   unverified: 'Unverified',
 }

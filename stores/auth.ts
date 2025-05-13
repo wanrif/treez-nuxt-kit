@@ -13,22 +13,26 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async login(credentials: LoginCredentials) {
-      this.error = null
-      this.loading = true
-      try {
-        const { signIn } = useAuth()
-        const { error } = await signIn.email({
+      const { signIn } = useAuth()
+      const toast = useToast()
+      await signIn.email(
+        {
           email: credentials.email,
           password: credentials.password,
-        })
-        if (error) throw new Error(error?.message, { cause: error })
-      } catch (error: unknown) {
-        const err = error as ApiError
-        this.error = err.message
-        throw err
-      } finally {
-        this.loading = false
-      }
+        },
+        {
+          onError: (ctx) => {
+            if (ctx.error.status === 403 && ctx.error?.code === 'EMAIL_NOT_VERIFIED') {
+              toast.add({
+                title: 'Please verify your email address',
+                description: 'Please check your email for the verification link.',
+                color: 'warning',
+              })
+            }
+            throw ctx.error
+          },
+        }
+      )
     },
     async register(credentials: RegisterCredentials) {
       this.error = null
