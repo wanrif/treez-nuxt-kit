@@ -168,6 +168,7 @@ export default defineNuxtConfig({
         redirectUserTo: '/dashboard',
         redirectGuestTo: '/',
       },
+      baseUrl: '',
     },
   },
   nitro: {

@@ -244,6 +244,22 @@ export default {
   validation_two_factor_code_numeric: 'Kode verifikasi harus berupa 6 digit angka',
   validation_recovery_code_required: 'Kode pemulihan wajib diisi',
 
+  // Verifikasi Email
+  verify_email_title: 'Verifikasi Email Anda',
+  verify_email_loading: 'Sedang memverifikasi alamat email Anda...',
+  verify_email_success_title: 'Email Terverifikasi!',
+  verify_email_success_message:
+    'Alamat email Anda telah berhasil diverifikasi. Anda sekarang dapat masuk ke akun Anda.',
+  verify_email_error_title: 'Verifikasi Gagal',
+  verify_email_error_message:
+    'Terjadi masalah saat memverifikasi email Anda. Tautan mungkin tidak valid atau kedaluwarsa.',
+  verify_email_invalid_token:
+    'Tautan verifikasi tidak valid atau telah kedaluwarsa. Silakan minta email verifikasi baru.',
+  verify_email_banned_user_title: 'Akun Dibatasi',
+  verify_email_banned_user_message: 'Akun ini telah dibatasi. Silakan hubungi dukungan untuk bantuan.',
+  go_to_login: 'Menuju Halaman Login',
+  go_to_dashboard: 'Menuju Dasbor',
+
   verified: 'Terverifikasi',
   unverified: 'Belum Terverifikasi',
 }

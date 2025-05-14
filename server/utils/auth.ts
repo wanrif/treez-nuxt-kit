@@ -6,13 +6,14 @@ import { render } from '@vue-email/render'
 
 import { AUTH_OTP_LENGTH, AUTH_OTP_PERIOD } from '~/constant'
 import { accountTable, sessionsTable, twoFactorTable, usersTable, verificationTable } from '~/database/schema'
-import ResetPasswordTemplate from '~/server/email/resetPasswordTemplate.vue'
+import { EmailVerificationTemplate, ResetPasswordTemplate } from '~/server/email'
 import { useDrizzle } from '~/server/utils/drizzle'
 import sendEmail from '~/server/utils/email'
 import { useRedis } from '~/server/utils/redis'
 
 const db = useDrizzle()
 const redis = useRedis()
+const runtimeConfig = useRuntimeConfig()
 
 const auth = betterAuth({
   account: {
@@ -48,13 +49,15 @@ const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    requireEmailVerification: true,
     resetPasswordTokenExpiresIn: 3600, // 1 hour
-    sendResetPassword: async ({ user, url, token }, _request) => {
+    sendResetPassword: async ({ user, token }, _request) => {
+      const { baseUrl } = runtimeConfig.public
       const html = await render(
         ResetPasswordTemplate,
         {
           title: 'Reset Your Password',
-          url: `${url}?token=${token}`,
+          url: `${baseUrl}/reset-password?token=${token}`,
         },
         {
           pretty: true,
@@ -66,6 +69,29 @@ const auth = betterAuth({
         html,
       })
     },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, token }, _request) => {
+      const { baseUrl } = runtimeConfig.public
+      const html = await render(
+        EmailVerificationTemplate,
+        {
+          title: 'Verify Your Email Address',
+          url: `${baseUrl}/verify-email?token=${token}`,
+        },
+        {
+          pretty: true,
+        }
+      )
+      await sendEmail({
+        to: user.email,
+        subject: 'Verify your email address',
+        html,
+      })
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    expiresIn: 3600, // 1 hour
   },
   plugins: [
     admin({
