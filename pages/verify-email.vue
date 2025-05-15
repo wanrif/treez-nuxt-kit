@@ -78,8 +78,8 @@ onMounted(async () => {
           <p class="mt-2 text-gray-600 dark:text-gray-300">
             {{ t('verify_email_success_message') }}
           </p>
-          <UButton color="primary" class="mt-6 w-full" :to="localePath('/login')">
-            {{ t('go_to_login') }}
+          <UButton color="primary" class="mt-6 flex w-full items-center justify-center" :to="localePath('/dashboard')">
+            {{ t('go_to_dashboard') }}
           </UButton>
         </div>
       </template>

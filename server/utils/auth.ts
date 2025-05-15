@@ -162,6 +162,9 @@ const auth = betterAuth({
       website: { type: 'string', fieldName: 'website', returned: true, input: true, required: false },
       bio: { type: 'string', fieldName: 'bio', returned: true, input: true, required: false },
     },
+    changeEmail: {
+      enabled: true,
+    },
   },
   verification: {
     fields: {

@@ -67,6 +67,14 @@ export default {
   profile_bio_label: 'Bio',
   profile_toast_success: 'Profile updated successfully',
   profile_toast_error: 'Failed to update profile',
+  profile_email_section_title: 'Email Address',
+  profile_email_section_desc:
+    'Your email is used for login and notifications. Changing your email requires verification.',
+  profile_email_change_btn: 'Change Email',
+  profile_email_edit_btn: 'Edit',
+  profile_email_change_info: 'You will receive a verification link at your new email.',
+  profile_email_toast_success: 'Email change request sent. Please check your new email for a verification link.',
+  profile_email_toast_error: 'Failed to change email. Please try again.',
 
   // Password
   change_password: 'Change Password',
