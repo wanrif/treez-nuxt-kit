@@ -1,9 +1,7 @@
-import { seedRoles } from './roles'
 import { seedUsers } from './users'
 
 async function main() {
   try {
-    await seedRoles()
     await seedUsers()
     // eslint-disable-next-line no-console
     console.log('✨ All seeds completed successfully')

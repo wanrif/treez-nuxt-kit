@@ -16,11 +16,11 @@ const emit = defineEmits<{
       <div class="box-border flex flex-col gap-4">
         <div class="grid grid-cols-3 gap-4 text-sm text-gray-500 dark:text-gray-400">
           <p class="col-span-1">User ID</p>
-          <span class="col-auto text-gray-900 dark:text-white">{{ item.id }}</span>
+          <span class="col-span-2 w-full text-pretty break-all text-gray-900 dark:text-white">{{ item.id }}</span>
         </div>
         <div class="grid grid-cols-3 gap-4 text-sm text-gray-500 dark:text-gray-400">
           <p class="col-span-1">Role</p>
-          <span class="col-auto text-gray-900 dark:text-white">{{ item.role }}</span>
+          <span class="col-span-2 text-gray-900 dark:text-white">{{ item.role }}</span>
         </div>
         <template v-if="item.banned">
           <div class="grid grid-cols-3 gap-4 text-sm text-gray-500 dark:text-gray-400">

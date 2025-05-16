@@ -28,6 +28,7 @@ export const useAuthStore = defineStore('auth', {
                 description: 'Please check your email for the verification link.',
                 color: 'warning',
               })
+              return
             }
             throw ctx.error
           },

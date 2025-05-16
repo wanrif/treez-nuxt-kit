@@ -1,1 +1,0 @@
-ALTER TABLE `accounts` ADD `password` varchar(255) NOT NULL;
