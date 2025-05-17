@@ -6,27 +6,21 @@ import { hash } from '@node-rs/argon2'
 
 import { useDrizzle } from '~/server/utils/drizzle'
 
-import { rolesTable } from '../schema/role'
+import { accountTable } from '../schema'
 import { usersTable } from '../schema/user'
 
 const defaultUsers = [
   {
-    name: 'Admin User',
-    email: 'admin@nuxtreez.com',
-    password: 'Pa$$w0rd!',
+    name: 'Admin Role',
+    email: 'admin@treeznuxtify.com',
+    email_verified: 0,
     role: 'admin',
   },
   {
-    name: 'Regular User',
-    email: 'user@nuxtreez.com',
-    password: 'Pa$$w0rd!',
+    name: 'User Role',
+    email: 'user@treeznuxtify.com',
+    email_verified: 0,
     role: 'user',
-  },
-  {
-    name: 'Guest User',
-    email: 'guest@nuxtreez.com',
-    password: 'Pa$$w0rd!',
-    role: 'guest',
   },
 ]
 
@@ -34,8 +28,7 @@ const defaultUsers = [
 const randomUsers = Array.from({ length: 100 }, () => ({
   name: faker.person.fullName(),
   email: faker.internet.email(),
-  password: 'Pa$$w0rd!',
-  role: faker.helpers.arrayElement(['user', 'guest']), // Only regular users and guests
+  role: faker.helpers.arrayElement(['user', 'admin']),
 }))
 
 const users = [...defaultUsers, ...randomUsers]
@@ -47,17 +40,7 @@ export async function seedUsers() {
     console.log('🌱 Seeding users...')
 
     for (const user of users) {
-      // Get role id
-      const role = await db.query.rolesTable.findFirst({
-        where: eq(rolesTable.name, user.role),
-      })
-
-      if (!role) {
-        throw new Error(`Role ${user.role} not found`)
-      }
-
-      // Hash password
-      const hashedPassword = await hash(user.password)
+      const hashedPassword = await hash('Pa$$w0rd!')
 
       // Insert user
       await db
@@ -65,14 +48,38 @@ export async function seedUsers() {
         .values({
           name: user.name,
           email: user.email,
-          password: hashedPassword,
-          role_id: role.id,
+          role: user.role,
         })
         .onDuplicateKeyUpdate({
           set: {
             name: user.name,
+            email: user.email,
+            role: user.role,
+          },
+        })
+
+      const findUser = await db.query.usersTable.findFirst({
+        where: eq(usersTable.name, user?.name),
+      })
+      if (!findUser) {
+        // Skip if user not found
+        continue
+      }
+      // Insert account
+      await db
+        .insert(accountTable)
+        .values({
+          account_id: findUser.id,
+          provider_id: 'credential',
+          user_id: findUser.id,
+          password: hashedPassword,
+        })
+        .onDuplicateKeyUpdate({
+          set: {
+            account_id: findUser.id,
+            provider_id: 'credential',
+            user_id: findUser.id,
             password: hashedPassword,
-            role_id: role.id,
           },
         })
     }

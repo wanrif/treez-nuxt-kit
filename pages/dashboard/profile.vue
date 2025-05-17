@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { ProfileFormData } from '~/composables/useProfileForm'
-
 definePageMeta({
   layout: 'dashboard',
   auth: {
@@ -14,18 +12,14 @@ useHead({
   meta: [{ name: 'description', content: 'User profile page description' }],
 })
 
-const { user } = useAuth()
-const authStore = useAuthStore()
+const { client, user } = useAuth()
 const isMounted = useMounted()
 const toast = useToast()
 const { t } = useI18n()
 
-const isEditing = ref(false)
-
 const { fields, errors, isSubmitting, meta, submit, resetForm } = useProfileForm(
   {
     name: user.value?.name ?? '',
-    email: user.value?.email ?? '',
     phone: user.value?.phone ?? '',
     location: user.value?.location ?? '',
     website: user.value?.website ?? '',
@@ -33,18 +27,59 @@ const { fields, errors, isSubmitting, meta, submit, resetForm } = useProfileForm
   },
   async (values: ProfileFormData) => {
     try {
-      await authStore.updateProfile(values)
+      await client.updateUser({
+        name: values.name,
+        phone: values.phone,
+        location: values.location,
+        website: values.website,
+        bio: values.bio,
+      })
       toast.add({ title: t('profile_toast_success'), color: 'primary', icon: 'ph:check-circle-bold' })
-      isEditing.value = false
     } catch {
       toast.add({ title: t('profile_toast_error'), color: 'error', icon: 'ph:x-circle-bold' })
     }
   }
 )
 
+const {
+  fields: emailFields,
+  errors: emailErrors,
+  isSubmitting: isEmailSubmitting,
+  meta: emailMeta,
+  submit: submitEmail,
+  resetForm: resetEmailForm,
+} = useEmailForm(
+  {
+    email: user.value?.email ?? '',
+  },
+  async (values: EmailForm) => {
+    try {
+      await client.changeEmail({
+        newEmail: values.email,
+      })
+      toast.add({ title: t('profile_email_toast_success'), color: 'primary', icon: 'ph:check-circle-bold' })
+    } catch {
+      toast.add({ title: t('profile_email_toast_error'), color: 'error', icon: 'ph:x-circle-bold' })
+    }
+  }
+)
+
 const cancelEdit = () => {
   resetForm()
-  isEditing.value = false
+}
+
+const isEditingEmail = ref(false)
+
+const startEditEmail = () => {
+  isEditingEmail.value = true
+}
+const cancelEmailEdit = () => {
+  resetEmailForm()
+  isEditingEmail.value = false
+}
+
+const afterEmailChange = () => {
+  isEditingEmail.value = false
 }
 
 const isMobile = ref(false)
@@ -64,174 +99,234 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-4xl px-4 sm:px-6">
+  <div class="mx-auto flex max-w-3xl flex-col gap-y-8 px-4 py-8 sm:px-8">
     <template v-if="isMounted">
-      <!-- Profile Header -->
-      <div class="relative mb-6 overflow-hidden rounded-xl bg-white p-6 shadow sm:p-8 dark:bg-treez-950">
-        <!-- Decorative Elements -->
-        <div class="absolute top-0 right-0 h-32 w-32 translate-x-16 -translate-y-16 transform">
-          <div class="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-3xl" />
-        </div>
-
-        <div class="relative z-10">
-          <div class="flex flex-col items-center space-y-6 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-            <!-- Profile Info Section -->
-            <div class="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-y-0 sm:space-x-6">
-              <!-- Avatar Section -->
-              <div class="group relative">
-                <div class="h-24 w-24 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-1 sm:h-28 sm:w-28">
-                  <div
-                    class="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-white dark:bg-treez-900"
-                  >
-                    <span
-                      class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl"
-                    >
-                      {{
-                        user?.name
-                          .split(' ')
-                          .map((n) => n[0])
-                          .join('')
-                      }}
-                    </span>
-                  </div>
-                </div>
-                <div
-                  class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600/50 to-purple-600/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                >
-                  <Icon name="tabler:camera" class="h-6 w-6 text-white" />
-                </div>
-              </div>
-
-              <!-- User Info -->
-              <div class="space-y-2 text-center sm:text-left">
-                <h1
-                  class="bg-gradient-to-r from-treez-900 to-treez-700 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl dark:from-white dark:to-treez-300"
-                >
-                  {{ user?.name }}
-                </h1>
-                <div
-                  class="flex flex-col items-center space-y-2 text-sm sm:flex-row sm:items-start sm:space-y-0 sm:space-x-4"
-                >
-                  <div class="flex items-center space-x-2 text-treez-600 dark:text-treez-400">
-                    <Icon name="tabler:mail" class="h-4 w-4" />
-                    <span>{{ user?.email }}</span>
-                  </div>
-                  <div class="flex items-center space-x-2 text-treez-600 dark:text-treez-400">
-                    <Icon name="tabler:map-pin" class="h-4 w-4" />
-                    <span>{{ user?.location ? user?.location : '-' }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <button
-              v-if="!isEditing"
-              class="transform rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2 font-medium text-white transition duration-200 hover:scale-[1.02] hover:from-blue-700 hover:to-purple-700"
-              @click="isEditing = true"
+      <!-- Profile Header Card -->
+      <div
+        class="relative flex flex-col items-center gap-6 overflow-hidden rounded-2xl bg-white p-6 shadow sm:flex-row sm:items-start sm:p-8 dark:bg-treez-950"
+      >
+        <!-- Avatar -->
+        <div class="group relative">
+          <div class="h-24 w-24 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-1 sm:h-28 sm:w-28">
+            <div
+              class="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-white dark:bg-treez-900"
             >
-              {{ $t('edit_profile') }}
-            </button>
+              <span
+                class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl"
+              >
+                {{
+                  user?.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                }}
+              </span>
+            </div>
           </div>
-
-          <!-- Bio Section -->
-          <div class="mt-6 border-t border-treez-200 pt-6 dark:border-treez-700">
-            <p class="text-sm leading-relaxed text-treez-600 dark:text-treez-400">
-              {{ user?.bio }}
-            </p>
+          <div
+            class="absolute inset-0 flex cursor-pointer items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600/50 to-purple-600/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          >
+            <Icon name="tabler:camera" class="h-6 w-6 text-white" />
           </div>
+        </div>
+        <!-- Info -->
+        <div class="flex flex-1 flex-col items-center gap-2 sm:items-start">
+          <h1
+            class="bg-gradient-to-r from-treez-900 to-treez-700 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl dark:from-white dark:to-treez-300"
+          >
+            {{ user?.name }}
+          </h1>
+          <div
+            class="flex flex-col items-center gap-2 text-sm text-treez-600 sm:flex-row sm:items-start dark:text-treez-400"
+          >
+            <div class="flex items-center gap-1">
+              <Icon name="tabler:mail" class="h-4 w-4" />
+              <span>{{ user?.email }}</span>
+            </div>
+            <span v-if="user?.location" class="hidden sm:inline">·</span>
+            <div class="flex items-center gap-1">
+              <Icon name="tabler:map-pin" class="h-4 w-4" />
+              <span>{{ user?.location || '-' }}</span>
+            </div>
+          </div>
+          <p v-if="user?.bio" class="mt-2 text-center text-sm text-treez-600 sm:text-left dark:text-treez-400">
+            {{ user?.bio }}
+          </p>
         </div>
       </div>
 
-      <!-- Profile Content -->
-      <div class="rounded-xl bg-white p-4 shadow sm:p-6 dark:bg-treez-950">
-        <form @submit.prevent="submit">
-          <div class="space-y-6">
-            <!-- Personal Information -->
-            <div>
-              <h2 class="mb-4 text-lg font-semibold text-treez-900 dark:text-white">
-                {{ $t('personal_info') }}
-              </h2>
-              <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
-                <template v-for="(field, key) in fields" :key="key">
-                  <UFormField
-                    v-slot="{ error: fieldError }"
-                    :label="$t(`profile_${key}_label`)"
-                    :error="errors[key]"
-                    :class="{ 'md:col-span-2': ['website', 'bio'].includes(key) }"
-                  >
-                    <template v-if="key === 'bio'">
-                      <UTextarea
-                        v-model="field.value.value"
-                        :disabled="!isEditing"
-                        :rows="4"
-                        color="info"
-                        variant="outline"
-                        size="lg"
-                        class="!w-full"
-                        :ui="{
-                          base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-50 border-0 shadow-xs bg-gray-50 dark:bg-treez-950 text-treez-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-treez-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400',
-                        }"
-                      />
-                    </template>
-                    <template v-else>
-                      <UInput
-                        v-model="field.value.value"
-                        :type="key === 'email' ? 'email' : 'text'"
-                        :disabled="!isEditing"
-                        color="info"
-                        variant="outline"
-                        size="lg"
-                        class="!w-full"
-                        :trailing-icon="fieldError ? 'i-heroicons-exclamation-triangle-20-solid' : undefined"
-                        :ui="{
-                          base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-50 border-0 shadow-xs bg-gray-50 dark:bg-treez-950 text-treez-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-treez-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400',
-                        }"
-                      />
-                    </template>
-                  </UFormField>
-                </template>
-              </div>
-            </div>
+      <!-- Email Change Card -->
+      <div class="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow dark:bg-treez-950">
+        <div class="mb-2 flex items-center gap-2">
+          <Icon name="tabler:mail" class="h-5 w-5 text-blue-500" />
+          <h2 class="text-lg font-semibold text-treez-900 dark:text-white">
+            {{ t('profile_email_section_title') || t('Email address') }}
+          </h2>
+        </div>
+        <p class="mb-2 text-sm text-treez-500 dark:text-treez-400">
+          {{
+            t('profile_email_section_desc') ||
+            t('Your email is used for login and notifications. Changing your email requires verification.')
+          }}
+        </p>
+        <form
+          v-if="isEditingEmail"
+          @submit.prevent="
+            async () => {
+              await submitEmail()
+              afterEmailChange()
+            }
+          "
+        >
+          <UFormField v-slot="{ error: fieldError }" :label="t('profile_email_label')" :error="emailErrors.email">
+            <UInput
+              v-model="emailFields.email.value.value"
+              type="email"
+              color="info"
+              variant="outline"
+              size="lg"
+              autofocus
+              class="!w-full"
+              :trailing-icon="fieldError ? 'i-heroicons-exclamation-triangle-20-solid' : undefined"
+              :ui="{
+                base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-50 border-0 shadow-xs bg-gray-50 dark:bg-treez-950 text-treez-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-treez-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400',
+              }"
+            />
+          </UFormField>
+          <div class="mt-4 flex flex-col justify-end gap-3 sm:flex-row">
+            <UButton
+              type="button"
+              variant="outline"
+              color="neutral"
+              class="w-full rounded-lg border border-gray-300 px-4 py-2 text-treez-700 transition hover:bg-gray-50 sm:w-auto dark:border-treez-600 dark:text-treez-300 dark:hover:bg-treez-950"
+              @click="cancelEmailEdit"
+            >
+              {{ t('cancel') }}
+            </UButton>
+            <UButton
+              :disabled="isEmailSubmitting || !emailMeta.valid || !emailMeta.dirty"
+              type="submit"
+              icon="tabler:mail-forward"
+              class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 font-medium text-white transition hover:from-blue-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              {{ t('profile_email_change_btn') || t('Change Email') }}
+            </UButton>
+          </div>
+          <div class="mt-2 flex items-center gap-1 text-xs text-treez-500 dark:text-treez-400">
+            <Icon name="tabler:info-circle" class="h-4 w-4" />
+            {{ t('profile_email_change_info') || t('You will receive a verification link at your new email.') }}
+          </div>
+        </form>
+        <div v-else class="flex items-center gap-3">
+          <UInput
+            :model-value="emailFields.email.value.value"
+            type="email"
+            readonly
+            color="info"
+            variant="outline"
+            size="lg"
+            class="!w-full"
+            :ui="{
+              base: 'relative block w-full bg-gray-50 dark:bg-treez-950 text-treez-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-treez-700',
+            }"
+          />
+          <UButton
+            type="button"
+            icon="tabler:edit"
+            class="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 font-medium text-white transition hover:from-blue-700 hover:to-purple-700"
+            @click="startEditEmail"
+          >
+            {{ t('profile_email_edit_btn') || t('Edit') }}
+          </UButton>
+        </div>
+      </div>
 
-            <!-- Action Buttons -->
-            <div v-if="isEditing" class="flex flex-col space-y-3 sm:flex-row sm:justify-end sm:space-y-0 sm:space-x-4">
-              <button
-                type="button"
-                class="order-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-treez-700 transition duration-200 hover:bg-gray-50 sm:order-1 sm:w-auto dark:border-treez-600 dark:text-treez-300 dark:hover:bg-treez-950"
-                @click="cancelEdit"
+      <!-- Personal Info Card -->
+      <div class="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow dark:bg-treez-950">
+        <div class="mb-2 flex items-center gap-2">
+          <Icon name="tabler:user" class="h-5 w-5 text-purple-500" />
+          <h2 class="text-lg font-semibold text-treez-900 dark:text-white">
+            {{ t('personal_info') }}
+          </h2>
+        </div>
+        <form @submit.prevent="submit">
+          <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+            <template v-for="(field, key) in fields" :key="key">
+              <UFormField
+                v-slot="{ error: fieldError }"
+                :label="t(`profile_${key}_label`)"
+                :error="errors[key]"
+                :class="{ 'md:col-span-2': ['bio'].includes(key) }"
               >
-                {{ $t('cancel') }}
-              </button>
-              <button
-                :disabled="isSubmitting || !meta.valid || !meta.dirty"
-                type="submit"
-                class="order-1 w-full rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 font-medium text-white transition duration-200 hover:from-blue-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-50 sm:order-2 sm:w-auto"
-              >
-                {{ $t('save_changes') }}
-              </button>
-            </div>
+                <template v-if="key === 'bio'">
+                  <UTextarea
+                    v-model="field.value.value"
+                    :rows="4"
+                    color="info"
+                    variant="outline"
+                    size="lg"
+                    class="!w-full"
+                    :ui="{
+                      base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-50 border-0 shadow-xs bg-gray-50 dark:bg-treez-950 text-treez-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-treez-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400',
+                    }"
+                  />
+                </template>
+                <template v-else>
+                  <UInput
+                    v-model="field.value.value"
+                    type="text"
+                    color="info"
+                    variant="outline"
+                    size="lg"
+                    class="!w-full"
+                    :trailing-icon="fieldError ? 'i-heroicons-exclamation-triangle-20-solid' : undefined"
+                    :ui="{
+                      base: 'relative block w-full disabled:cursor-not-allowed disabled:opacity-50 border-0 shadow-xs bg-gray-50 dark:bg-treez-950 text-treez-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-treez-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400',
+                    }"
+                  />
+                </template>
+              </UFormField>
+            </template>
+          </div>
+          <div class="mt-6 flex flex-col justify-end gap-3 sm:flex-row">
+            <UButton
+              type="button"
+              variant="outline"
+              color="neutral"
+              class="w-full rounded-lg border border-gray-300 px-4 py-2 text-treez-700 transition hover:bg-gray-50 sm:w-auto dark:border-treez-600 dark:text-treez-300 dark:hover:bg-treez-950"
+              @click="cancelEdit"
+            >
+              {{ t('cancel') }}
+            </UButton>
+            <UButton
+              :disabled="isSubmitting || !meta.valid || !meta.dirty"
+              type="submit"
+              icon="tabler:device-floppy"
+              class="flex w-full items-center gap-1 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 font-medium text-white transition hover:from-blue-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            >
+              {{ t('save_changes') }}
+            </UButton>
           </div>
         </form>
       </div>
     </template>
 
     <template v-else>
-      <!-- Profile Header Skeleton -->
-      <div class="mb-6 rounded-xl bg-white p-6 shadow-lg sm:p-8 dark:bg-treez-900">
-        <div class="flex flex-col items-center space-y-6 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-          <div class="flex flex-col items-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-6">
-            <div class="h-24 w-24 animate-pulse rounded-2xl bg-treez-200 sm:h-28 sm:w-28 dark:bg-treez-950" />
-            <div class="space-y-2 text-center sm:text-left">
-              <div class="h-8 w-48 animate-pulse rounded bg-treez-200 dark:bg-treez-950" />
-              <div class="h-4 w-32 animate-pulse rounded bg-treez-200 dark:bg-treez-950" />
-            </div>
-          </div>
+      <!-- Skeletons -->
+      <div
+        class="mb-6 flex flex-col items-center gap-6 rounded-2xl bg-white p-6 shadow-lg sm:flex-row dark:bg-treez-900"
+      >
+        <div class="h-24 w-24 animate-pulse rounded-2xl bg-treez-200 sm:h-28 sm:w-28 dark:bg-treez-950" />
+        <div class="flex-1 space-y-2">
+          <div class="h-8 w-48 animate-pulse rounded bg-treez-200 dark:bg-treez-950" />
+          <div class="h-4 w-32 animate-pulse rounded bg-treez-200 dark:bg-treez-950" />
         </div>
       </div>
-
-      <!-- Profile Content Skeleton -->
-      <div class="rounded-xl bg-white p-4 shadow-sm sm:p-6 dark:bg-treez-900">
+      <div class="mb-6 rounded-2xl bg-white p-6 shadow dark:bg-treez-900">
+        <div class="mb-2 h-4 w-24 animate-pulse rounded bg-treez-200 dark:bg-treez-950" />
+        <div class="h-10 w-full animate-pulse rounded bg-treez-200 dark:bg-treez-950" />
+      </div>
+      <div class="rounded-2xl bg-white p-6 shadow dark:bg-treez-900">
         <div class="mb-6 h-6 w-40 animate-pulse rounded bg-treez-200 dark:bg-treez-950" />
         <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
           <div v-for="i in 6" :key="i" class="space-y-2">

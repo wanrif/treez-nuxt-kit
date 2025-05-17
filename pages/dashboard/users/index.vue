@@ -35,9 +35,16 @@ const statusOptions = ref([
   { label: 'Active', value: 'active' },
   { label: 'Banned', value: 'banned' },
 ])
+const pageSizeOptions = ref([
+  { label: '5', value: 5 },
+  { label: '10', value: 10 },
+  { label: '25', value: 25 },
+  { label: '50', value: 50 },
+  { label: '100', value: 100 },
+])
 
 const pagination = ref({
-  pageIndex: 1,
+  pageIndex: 0,
   pageSize: 5,
 })
 const sorting = ref([
@@ -64,16 +71,14 @@ const fetchUsers = async () => {
     if (sorting.value[0].id === 'status') {
       sorting.value[0].id = 'banned'
     }
-    const queryParams: Record<string, string | number> = {
+    const queryParams: Record<string, string | number | boolean> = {
       limit: pagination.value.pageSize,
-      offset: (pagination.value.pageIndex - 1) * pagination.value.pageSize,
+      offset: pagination.value.pageIndex * pagination.value.pageSize,
       sortBy: sorting.value[0].id,
       sortDirection: sorting.value[0].desc ? 'desc' : 'asc',
     }
 
     if (searchQuery.value) {
-      queryParams.searchField = 'name'
-      queryParams.searchOperator = 'contains'
       queryParams.searchValue = searchQuery.value
     }
 
@@ -272,19 +277,30 @@ const debouncedFetchUsers = useDebounceFn(fetchUsers, 300)
 
 // Watch for changes in filters
 watch(searchQuery, () => {
-  pagination.value.pageIndex = 1 // Reset to first page when searching
+  pagination.value.pageIndex = 0 // Reset to first page when searching
   debouncedFetchUsers()
 })
 
 watch(selectedStatus, () => {
-  pagination.value.pageIndex = 1 // Reset to first page when changing filter
+  pagination.value.pageIndex = 0 // Reset to first page when changing filter
   fetchUsers()
 })
 
 // Watch for page changes
-watch(pagination, () => {
-  fetchUsers()
-})
+watch(
+  () => pagination.value.pageIndex,
+  () => {
+    fetchUsers()
+  }
+)
+
+watch(
+  () => pagination.value.pageSize,
+  () => {
+    pagination.value.pageIndex = 0 // Reset to first page when page size changes
+    fetchUsers()
+  }
+)
 
 // Fetch initial data on component mount
 onMounted(() => {
@@ -313,18 +329,28 @@ onMounted(() => {
             variant="outline"
             placeholder="Search by name..."
             :trailing="false"
-            :disabled="loading"
+            class="w-full sm:w-72"
           />
         </div>
       </div>
-      <USelect
-        v-model="selectedStatus"
-        :items="statusOptions"
-        color="neutral"
-        size="lg"
-        class="w-28"
-        :disabled="loading"
-      />
+      <div class="grid grid-cols-2 gap-4 sm:flex sm:gap-4">
+        <USelect
+          v-model="selectedStatus"
+          :items="statusOptions"
+          color="neutral"
+          size="lg"
+          class="w-full sm:w-28"
+          :disabled="loading"
+        />
+        <USelect
+          v-model="pagination.pageSize"
+          :items="pageSizeOptions"
+          color="neutral"
+          size="lg"
+          class="w-full sm:w-28"
+          :disabled="loading"
+        />
+      </div>
     </div>
 
     <div v-if="isMounted" class="overflow-hidden rounded-lg shadow">
@@ -343,8 +369,8 @@ onMounted(() => {
       />
 
       <div class="border-t border-default bg-default px-4 py-3.5 text-sm text-muted">
-        {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-        {{ table?.tableApi?.getFilteredRowModel().rows.length || 0 }} row(s) selected.
+        {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of {{ usersResponse?.total || 0 }} row(s)
+        selected.
       </div>
     </div>
 
@@ -354,7 +380,7 @@ onMounted(() => {
         active-variant="subtle"
         :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
         :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-        :total="table?.tableApi?.getFilteredRowModel().rows.length"
+        :total="usersResponse?.total || 0"
         @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
       />
     </div>

@@ -77,6 +77,14 @@ export default {
   profile_bio_label: 'Bio',
   profile_toast_success: 'Profil berhasil diperbarui',
   profile_toast_error: 'Gagal memperbarui profil',
+  profile_email_section_title: 'Alamat Email',
+  profile_email_section_desc: 'Email Anda digunakan untuk login dan notifikasi. Mengubah email memerlukan verifikasi.',
+  profile_email_change_btn: 'Ubah Email',
+  profile_email_edit_btn: 'Edit',
+  profile_email_change_info: 'Anda akan menerima tautan verifikasi di email baru Anda.',
+  profile_email_toast_success:
+    'Permintaan perubahan email dikirim. Silakan cek email baru Anda untuk tautan verifikasi.',
+  profile_email_toast_error: 'Gagal mengubah email. Silakan coba lagi.',
 
   // Password
   change_password: 'Ubah Kata Sandi',

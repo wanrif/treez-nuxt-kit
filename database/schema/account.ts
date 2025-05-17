@@ -1,5 +1,6 @@
 import { index, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
 
+import { generateId } from '../../server/utils/coreHelper'
 import { usersTable } from './user'
 
 export const accountTable = mysqlTable(

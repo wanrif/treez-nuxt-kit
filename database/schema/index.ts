@@ -4,7 +4,6 @@ import { twoFactorTable } from './twoFactor'
 import { usersTable } from './user'
 import { verificationTable } from './verification'
 
-export * from './role'
 export * from './account'
 export * from './user'
 export * from './session'

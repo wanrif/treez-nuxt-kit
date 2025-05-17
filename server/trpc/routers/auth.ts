@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { accountTable } from '~/database/schema'
+import { hashPassword, verifyPassword } from '~/server/utils/auth'
 import { useDrizzle } from '~/server/utils/drizzle'
 
 import { createTRPCRouter, protectedProcedure } from '../init'
@@ -30,19 +31,14 @@ export const authRouter = createTRPCRouter({
         throw new AuthError('Failed to change password')
       }
 
-      const context = await auth.$context
-
-      const isValidPassword = await context.password.verify({
-        password: input.oldPassword,
-        hash: account.password,
-      })
+      const isValidPassword = await verifyPassword(account.password, input.oldPassword)
       if (!isValidPassword) {
         throw new ValidationError('Invalid current password', {
           currentPassword: ['Current password is incorrect'],
         })
       }
 
-      const newHashedPassword = await context.password.hash(input.newPassword)
+      const newHashedPassword = await hashPassword(input.newPassword)
       await useDrizzle()
         .update(accountTable)
         .set({ password: newHashedPassword })
