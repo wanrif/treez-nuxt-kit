@@ -4,6 +4,7 @@ useHead({
   meta: [{ name: 'description', content: 'Home page description' }],
 })
 
+const runtimeConfig = useRuntimeConfig()
 const { t } = useI18n()
 const isMounted = useMounted()
 
@@ -24,7 +25,10 @@ const features = [
       <div class="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div class="text-center">
           <h1 class="mb-6 text-6xl font-bold tracking-tight text-treez-900 dark:text-white">
-            {{ t('hero_title') }} <span class="text-primary-600 dark:text-primary-400">Treez-Nuxtkit</span>
+            {{ t('hero_title') }}
+            <span class="text-primary-600 dark:text-primary-400">{{
+              runtimeConfig.public.appName.replace(' ', '-')
+            }}</span>
           </h1>
           <p class="mx-auto mb-10 max-w-2xl text-xl text-treez-600 dark:text-treez-300">
             {{ t('hero_subtitle') }}

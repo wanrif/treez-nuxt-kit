@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import * as locales from '@nuxt/ui/locale'
 
+const runtimeConfig = useRuntimeConfig()
 const { locale } = useI18n()
 
 const lang = computed(() => locales[locale.value].code)
@@ -12,20 +13,20 @@ useHead({
     dir,
   },
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} | Treez-Nuxtkit` : 'Treez-Nuxtkit'
+    return titleChunk ? `${titleChunk} | ${runtimeConfig.public.appName}` : runtimeConfig.public.appName
   },
   meta: [
     {
       name: 'description',
-      content: 'This is Treez-Nuxtkit, let me tell you all about it.',
+      content: `This is ${runtimeConfig.public.appName}, let me tell you all about it.`,
     },
     {
       property: 'og:title',
-      content: 'Treez-Nuxtkit',
+      content: runtimeConfig.public.appName,
     },
     {
       property: 'og:description',
-      content: 'This is Treez-Nuxtkit, let me tell you all about it.',
+      content: `This is ${runtimeConfig.public.appName}, let me tell you all about it.`,
     },
     {
       property: 'og:image',

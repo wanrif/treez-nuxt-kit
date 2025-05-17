@@ -169,6 +169,7 @@ export default defineNuxtConfig({
         redirectGuestTo: '/',
       },
       baseUrl: '',
+      appName: 'Treez Nuxtify',
     },
   },
   nitro: {

@@ -381,7 +381,7 @@ onMounted(() => {
         :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
         :items-per-page="table?.tableApi?.getState().pagination.pageSize"
         :total="usersResponse?.total || 0"
-        @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
+        @update:page="(p: number) => table?.tableApi?.setPageIndex(p - 1)"
       />
     </div>
   </div>
