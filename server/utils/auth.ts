@@ -38,7 +38,7 @@ export const verifyPassword = async (password: string, hashedPassword: string) =
   return isValid
 }
 
-const auth = betterAuth({
+export const serverAuth = betterAuth({
   account: {
     fields: {
       password: 'password',
@@ -175,9 +175,10 @@ const auth = betterAuth({
     },
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+    freshAge: 60 * 5, // 5 minutes (the session is fresh if created within the last 5 minutes)
     cookieCache: {
       enabled: true,
-      maxAge: 5 * 60, // Cache duration in seconds
+      maxAge: 5 * 60, // 5 minutes (Cache duration in seconds)
     },
   },
   trustedOrigins: [],
@@ -209,5 +210,3 @@ const auth = betterAuth({
     },
   },
 })
-
-export default auth

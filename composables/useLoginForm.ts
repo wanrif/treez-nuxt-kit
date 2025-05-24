@@ -34,8 +34,8 @@ export const useLoginForm = (onSuccess: () => void) => {
       error.value = ''
       await auth.login(values)
       onSuccess()
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : t('login_failed')
+    } catch (e: unknown) {
+      error.value = (e as Error).message ? (e as Error).message : t('login_failed')
     }
   })
 

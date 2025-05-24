@@ -45,7 +45,7 @@ const menuItems = computed(() =>
   <div class="flex h-screen w-full bg-gradient-to-t from-white to-treez-50 dark:from-treez-950 dark:to-treez-900">
     <LoadingSpinner size="lg" :show="!isMounted" />
 
-    <div v-show="isMounted" class="flex h-full w-full">
+    <div v-if="isMounted" class="flex h-full w-full">
       <!-- Mobile Menu Overlay -->
       <Transition name="fade">
         <div
