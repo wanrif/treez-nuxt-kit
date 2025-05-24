@@ -10,8 +10,6 @@ defineProps<{
 }>()
 
 defineEmits(['toggle-sidebar', 'toggle-mobile-menu', 'toggle-submenu'])
-
-const isMounted = useMounted()
 </script>
 
 <template>
@@ -47,7 +45,7 @@ const isMounted = useMounted()
       </button>
     </div>
 
-    <div v-if="isMounted" class="flex flex-col gap-1 px-2 pt-4 pb-24">
+    <div class="flex flex-col gap-1 px-2 pt-4 pb-24">
       <DashboardMenuItem
         v-for="item in menuItems"
         :key="item.label"

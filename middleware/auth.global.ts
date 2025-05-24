@@ -51,7 +51,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Check if this is a language switch navigation
   const isRootPath = to.path === '/' || to.path === ''
   const isLocaleRootPath =
-    isRootPath || locales.value.some((locale) => to.path === `/${locale.code}` || to.path === `/${locale.code}/`)
+    isRootPath ||
+    locales.value.some((locale: { code: string }) => to.path === `/${locale.code}` || to.path === `/${locale.code}/`)
 
   // Skip auth redirection for locale root paths (language switching)
   if (isLocaleRootPath) {

@@ -147,6 +147,7 @@ function getHeader(column: Column<InferUserClient>, label: string) {
       ],
       ui: {
         content: 'ring-treez-50/50 dark:ring-treez-800/50',
+        itemLeadingIcon: 'text-(--ui-secondary) size-3',
       },
     },
     () =>
@@ -159,6 +160,9 @@ function getHeader(column: Column<InferUserClient>, label: string) {
             ? 'i-lucide-arrow-up-narrow-wide'
             : 'i-lucide-arrow-down-wide-narrow'
           : 'i-lucide-arrow-up-down',
+        ui: {
+          leadingIcon: 'text-(--ui-secondary) size-3',
+        },
         class:
           '-mx-2.5 data-[state=open]:bg-treez-100/50 dark:data-[state=open]:bg-treez-800 hover:bg-treez-100/50 dark:hover:bg-treez-800',
         'aria-label': `Sort by ${isSorted === 'asc' ? 'descending' : 'ascending'}`,
@@ -312,7 +316,7 @@ onMounted(() => {
   <div class="flex flex-col gap-y-6">
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Users Management</h1>
-      <UButton variant="subtle" color="primary" size="lg" class="flex items-center gap-2">
+      <UButton variant="solid" color="secondary" size="lg" class="flex items-center gap-2">
         <Icon name="i-lucide:user-round-plus" class="h-5 w-5" />
         Add User
       </UButton>
@@ -327,7 +331,7 @@ onMounted(() => {
             color="info"
             size="lg"
             variant="outline"
-            placeholder="Search by name..."
+            :placeholder="t('search_user')"
             :trailing="false"
             class="w-full sm:w-72"
           />
@@ -376,7 +380,7 @@ onMounted(() => {
 
     <div class="flex justify-center">
       <UPagination
-        active-color="primary"
+        active-color="secondary"
         active-variant="subtle"
         :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
         :items-per-page="table?.tableApi?.getState().pagination.pageSize"
