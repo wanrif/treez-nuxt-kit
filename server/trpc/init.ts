@@ -5,6 +5,7 @@ import { ZodError } from 'zod'
 
 import { TRPCError, initTRPC } from '@trpc/server'
 
+import { serverAuth } from '~/server/utils/auth'
 import { generateTransactionId } from '~/utils/commonHelper.ts'
 
 /**
@@ -58,7 +59,7 @@ const rateLimiter = new LRUCache<string, number>({
 // Middleware
 const createAuthMiddleware = (requiredRole?: string) =>
   middleware(async ({ ctx, next }) => {
-    const session = await auth.api.getSession({
+    const session = await serverAuth.api.getSession({
       headers: ctx.event.headers,
     })
     const user = session?.user

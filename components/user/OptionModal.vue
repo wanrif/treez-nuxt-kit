@@ -6,10 +6,12 @@ defineProps<{
 const emit = defineEmits<{
   (_e: 'fetchUser'): void
 }>()
+
+const open = ref(false)
 </script>
 
 <template>
-  <UModal :title="item.name" :description="item.email" close-icon="i-lucide-x">
+  <UModal v-model:open="open" :title="item.name" :description="item.email" close-icon="i-lucide-x">
     <UButton label="Options" variant="ghost" color="secondary" />
 
     <template #body>
@@ -43,7 +45,10 @@ const emit = defineEmits<{
         <div class="grid grid-cols-3 gap-4 text-sm text-gray-500 dark:text-gray-400">
           <p class="col-span-1">Action</p>
 
-          <UserBannedModal :item="item" @fetch-user="emit('fetchUser')" />
+          <div class="flex items-center gap-2">
+            <UserBannedModal :item="item" @fetch-user="emit('fetchUser')" />
+            <UserRevokeSessionsModal :item="item" @fetch-user="emit('fetchUser')" />
+          </div>
         </div>
       </div>
     </template>

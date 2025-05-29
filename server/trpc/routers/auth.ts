@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { accountTable } from '~/database/schema'
-import { hashPassword, verifyPassword } from '~/server/utils/auth'
+import { hashPassword, serverAuth, verifyPassword } from '~/server/utils/auth'
 import { useDrizzle } from '~/server/utils/drizzle'
 
 import { createTRPCRouter, protectedProcedure } from '../init'
@@ -61,7 +61,7 @@ export const authRouter = createTRPCRouter({
         throw new AuthError('Failed to retrieve backup codes')
       }
 
-      const backupCodes = await auth.api.viewBackupCodes({
+      const backupCodes = await serverAuth.api.viewBackupCodes({
         body: {
           userId: ctx.user.id,
         },

@@ -22,8 +22,8 @@ export function useAuth() {
         ...headers,
         'x-csrf-token': csrf,
       },
-      onError: async (context) => {
-        const { response } = context
+      onError: async (context: unknown) => {
+        const { response } = context as { response: Response }
         if (response.status === 429) {
           const retryAfter = response.headers.get('X-Retry-After')
           // eslint-disable-next-line no-console
@@ -32,7 +32,7 @@ export function useAuth() {
       },
     },
     plugins: [
-      inferAdditionalFields<typeof auth>(),
+      inferAdditionalFields<typeof serverAuth>(),
       adminClient(),
       twoFactorClient({
         onTwoFactorRedirect() {
@@ -53,7 +53,7 @@ export function useAuth() {
   const user = useState<InferUser | null>('auth:user', () => null)
   const sessionFetching = import.meta.server ? ref(false) : useState('auth:sessionFetching', () => false)
 
-  const fetchSession = async () => {
+  const fetchSession = async ({ disableCache }: { disableCache?: boolean } = {}) => {
     if (sessionFetching.value) {
       // eslint-disable-next-line no-console
       console.log('already fetching session')
@@ -65,6 +65,9 @@ export function useAuth() {
         headers: {
           ...headers,
           'x-csrf-token': csrf,
+        },
+        query: {
+          disableCookieCache: disableCache,
         },
       },
     })

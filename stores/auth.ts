@@ -22,13 +22,23 @@ export const useAuthStore = defineStore('auth', {
         },
         {
           onError: (ctx) => {
-            if (ctx.error.status === 403 && ctx.error?.code === 'EMAIL_NOT_VERIFIED') {
-              toast.add({
-                title: 'Please verify your email address',
-                description: 'Please check your email for the verification link.',
-                color: 'warning',
-              })
-              return
+            if (ctx.error.status === 403) {
+              if (ctx.error?.code === 'EMAIL_NOT_VERIFIED') {
+                toast.add({
+                  title: 'Please verify your email address',
+                  description: 'Please check your email for the verification link.',
+                  color: 'warning',
+                })
+                return
+              }
+              if (ctx.error?.code === 'BANNED_USER') {
+                toast.add({
+                  title: 'Your account has been banned',
+                  description: 'Please contact support for more information.',
+                  color: 'error',
+                })
+                throw ctx.error
+              }
             }
             throw ctx.error
           },
