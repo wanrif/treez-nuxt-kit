@@ -9,7 +9,7 @@ const props = defineProps({
 const emit = defineEmits(['update:open'])
 
 const { t } = useI18n()
-const { $trpc } = useNuxtApp()
+const { $orpc } = useNuxtApp()
 const { user } = useAuth()
 const toast = useToast()
 const backupCodes = ref<string[]>([])
@@ -22,7 +22,7 @@ const internalOpen = computed({
 
 const fetchBackupCodes = async () => {
   try {
-    const { data } = await $trpc.auth.viewBackupCodes.query()
+    const { data } = await $orpc.auth.viewBackupCodes()
     if (data) {
       backupCodes.value = data?.backupCodes || []
     }

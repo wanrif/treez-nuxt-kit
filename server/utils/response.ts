@@ -3,7 +3,7 @@ import * as winston from 'winston'
 
 import { TRPCError } from '@trpc/server'
 
-import { generateTransactionId } from '~/utils/commonHelper.ts'
+import { generateTransactionId } from '~/utils/commonHelper'
 
 const format = winston.format
 

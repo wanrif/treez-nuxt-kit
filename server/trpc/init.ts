@@ -6,7 +6,7 @@ import { ZodError } from 'zod'
 import { TRPCError, initTRPC } from '@trpc/server'
 
 import { serverAuth } from '~/server/utils/auth'
-import { generateTransactionId } from '~/utils/commonHelper.ts'
+import { generateTransactionId } from '~/utils/commonHelper'
 
 /**
  * @see: https://trpc.io/docs/server/context
