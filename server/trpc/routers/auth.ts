@@ -1,24 +1,23 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 import { accountTable } from '~/database/schema'
 import { hashPassword, serverAuth, verifyPassword } from '~/server/utils/auth'
 import { useDrizzle } from '~/server/utils/drizzle'
 
-import { createTRPCRouter, protectedProcedure } from '../init'
+import { TRPCRouter, protectedProcedure } from '../init'
 
 const changePasswordSchema = z
-  .object({
+  .strictObject({
     oldPassword: z.string().min(6, 'Password must be at least 6 characters'),
     newPassword: z.string().min(6, 'Password must be at least 6 characters'),
     confirmNewPassword: z.string(),
   })
-  .strict()
   .refine((data) => data.confirmNewPassword === data.newPassword, {
     message: 'Passwords do not match',
     path: ['confirmNewPassword'],
   })
 
-export const authRouter = createTRPCRouter({
+export const authRouter = TRPCRouter({
   changePassword: protectedProcedure.input(changePasswordSchema).mutation(async ({ input, ctx }) => {
     try {
       const [account] = await useDrizzle()

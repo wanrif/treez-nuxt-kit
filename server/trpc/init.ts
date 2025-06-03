@@ -1,12 +1,12 @@
 import type { H3Event } from 'h3'
 import { LRUCache } from 'lru-cache'
 import superjson from 'superjson'
-import { ZodError } from 'zod'
+import { ZodError } from 'zod/v4'
 
 import { TRPCError, initTRPC } from '@trpc/server'
 
 import { serverAuth } from '~/server/utils/auth'
-import { generateTransactionId } from '~/utils/commonHelper.ts'
+import { generateTransactionId } from '~/utils/commonHelper'
 
 /**
  * @see: https://trpc.io/docs/server/context
@@ -46,8 +46,7 @@ const t = initTRPC.context<TRPCContext>().create({
 })
 
 // Base router and procedure helpers
-export const createTRPCRouter = t.router
-export const createCallerFactory = t.createCallerFactory
+export const TRPCRouter = t.router
 export const publicProcedure = t.procedure
 export const middleware = t.middleware
 

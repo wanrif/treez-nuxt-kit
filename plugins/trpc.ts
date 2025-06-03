@@ -1,6 +1,8 @@
 import superjson from 'superjson'
 import { createTRPCNuxtClient, httpBatchLink, httpLink } from 'trpc-nuxt/client'
 
+import { loggerLink } from '@trpc/client'
+
 import type { AppRouter } from '~/server/trpc/routers'
 
 export default defineNuxtPlugin(() => {
@@ -18,26 +20,29 @@ export default defineNuxtPlugin(() => {
   const createLinkConfig = () => ({
     url: endpoint,
     headers: getCommonHeaders(),
-    async fetch(url: URL | RequestInfo, options?: RequestInit): Promise<Response> {
-      try {
-        const response = await fetch(url, options)
-
-        return response
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error'
-        console.error('API request failed:', message)
-        throw createError({ message: `API request failed: ${message}` })
-      }
-    },
     transformer: superjson,
   })
 
   const trpc = createTRPCNuxtClient<AppRouter>({
-    links: [httpLink(createLinkConfig())],
+    links: [
+      loggerLink({
+        enabled: (opts) =>
+          (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') ||
+          (opts.direction === 'down' && opts.result instanceof Error),
+      }),
+      httpLink(createLinkConfig()),
+    ],
   })
 
   const trpcBatch = createTRPCNuxtClient<AppRouter>({
-    links: [httpBatchLink(createLinkConfig())],
+    links: [
+      loggerLink({
+        enabled: (opts) =>
+          (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') ||
+          (opts.direction === 'down' && opts.result instanceof Error),
+      }),
+      httpBatchLink(createLinkConfig()),
+    ],
   })
 
   return {

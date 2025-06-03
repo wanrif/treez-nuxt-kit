@@ -21,6 +21,7 @@ export function useAuth() {
       headers: {
         ...headers,
         'x-csrf-token': csrf,
+        'x-transaction-id': generateTransactionId(),
       },
       onError: async (context: unknown) => {
         const { response } = context as { response: Response }
@@ -62,10 +63,6 @@ export function useAuth() {
     sessionFetching.value = true
     const { data } = await client.getSession({
       fetchOptions: {
-        headers: {
-          ...headers,
-          'x-csrf-token': csrf,
-        },
         query: {
           disableCookieCache: disableCache,
         },

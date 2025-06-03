@@ -1,7 +1,7 @@
-import { createTRPCRouter } from '../init'
+import { TRPCRouter } from '../init'
 import { authRouter } from './auth'
 
-export const appRouter = createTRPCRouter({
+export const appRouter = TRPCRouter({
   auth: authRouter,
 })
 

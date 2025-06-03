@@ -19,8 +19,8 @@ const runtimeConfig = useRuntimeConfig()
 export const hashPassword = async (password: string) => {
   const hashedPassword = await hash(password, {
     algorithm: 2, // Argon2id
-    memoryCost: 65536, // 64 MB
-    timeCost: 3,
+    memoryCost: 19456, // 19 MiB
+    timeCost: 2,
     parallelism: 1,
     outputLen: 32,
   })
@@ -30,8 +30,8 @@ export const hashPassword = async (password: string) => {
 export const verifyPassword = async (password: string, hashedPassword: string) => {
   const isValid = await verify(hashedPassword, password, {
     algorithm: 2, // Argon2id
-    memoryCost: 65536, // 64 MB
-    timeCost: 3,
+    memoryCost: 19456, // 19 MiB
+    timeCost: 2,
     parallelism: 1,
     outputLen: 32,
   })
@@ -123,6 +123,11 @@ export const serverAuth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     expiresIn: 3600, // 1 hour
+  },
+  logger: {
+    log(level, message, ...args) {
+      logger[level](`Better Auth | ${message}`, { cause: { error: { ...args } } })
+    },
   },
   plugins: [
     admin({

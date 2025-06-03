@@ -3,9 +3,10 @@ import * as winston from 'winston'
 
 import { TRPCError } from '@trpc/server'
 
-import { generateTransactionId } from '~/utils/commonHelper.ts'
+import { generateTransactionId } from '~/utils/commonHelper'
 
 const format = winston.format
+type Chalk = typeof chalk
 
 /**
  * Custom log format for Winston logger
@@ -38,7 +39,7 @@ const format = winston.format
  */
 const myFormat = format.printf(
   ({ level, message, transactionId, label, code, statusCode, cause, timestamp, zodErrors }) => {
-    const levelColors: Record<string, chalk.Chalk> = {
+    const levelColors: Record<string, Chalk> = {
       error: chalk.red,
       warn: chalk.yellow,
       info: chalk.blueBright,
@@ -176,6 +177,7 @@ export function handleError(error: unknown, ctx?: { transactionId: string }) {
       PARSE_ERROR: 400,
       BAD_REQUEST: 400,
       UNAUTHORIZED: 401,
+      PAYMENT_REQUIRED: 402,
       FORBIDDEN: 403,
       NOT_FOUND: 404,
       METHOD_NOT_SUPPORTED: 405,
@@ -183,6 +185,7 @@ export function handleError(error: unknown, ctx?: { transactionId: string }) {
       CONFLICT: 409,
       PRECONDITION_FAILED: 412,
       PAYLOAD_TOO_LARGE: 413,
+      UNSUPPORTED_MEDIA_TYPE: 415,
       UNPROCESSABLE_CONTENT: 422,
       TOO_MANY_REQUESTS: 429,
       CLIENT_CLOSED_REQUEST: 499,
@@ -191,7 +194,6 @@ export function handleError(error: unknown, ctx?: { transactionId: string }) {
       BAD_GATEWAY: 502,
       SERVICE_UNAVAILABLE: 503,
       GATEWAY_TIMEOUT: 504,
-      UNSUPPORTED_MEDIA_TYPE: 415,
     }
 
     const statusCode = statusCodeMap[error.code] || 500
