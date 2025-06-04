@@ -1,6 +1,8 @@
-import { index, mysqlTable, text, varchar } from 'drizzle-orm/mysql-core'
+import { index, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
-export const twoFactorTable = mysqlTable(
+import { generateId } from '../../server/utils/coreHelper'
+
+export const twoFactorTable = pgTable(
   'twoFactor',
   {
     id: varchar('id', { length: 32 })
@@ -9,8 +11,8 @@ export const twoFactorTable = mysqlTable(
     user_id: varchar('user_id', { length: 255 }).notNull(),
     secret: varchar('secret', { length: 255 }).notNull(),
     backupCodes: text('backupCodes').notNull(),
-    created_at: varchar('created_at', { length: 255 }),
-    updated_at: varchar('updated_at', { length: 255 }),
+    created_at: timestamp('created_at').defaultNow(),
+    updated_at: timestamp('updated_at').defaultNow(),
   },
-  (table) => [index('secret').on(table.secret).using('btree')]
+  (table) => [index('secret').on(table.secret)]
 )

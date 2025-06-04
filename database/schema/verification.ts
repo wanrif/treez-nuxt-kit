@@ -1,6 +1,8 @@
-import { index, mysqlTable, varchar } from 'drizzle-orm/mysql-core'
+import { index, pgTable, timestamp, varchar } from 'drizzle-orm/pg-core'
 
-export const verificationTable = mysqlTable(
+import { generateId } from '../../server/utils/coreHelper'
+
+export const verificationTable = pgTable(
   'verifications',
   {
     id: varchar('id', { length: 32 })
@@ -8,10 +10,10 @@ export const verificationTable = mysqlTable(
       .$defaultFn(() => generateId()),
     identifier: varchar('identifier', { length: 255 }).notNull(),
     value: varchar('value', { length: 255 }).notNull(),
-    expires_at: varchar('expires_at', { length: 255 }),
-    created_at: varchar('created_at', { length: 255 }),
-    updated_at: varchar('updated_at', { length: 255 }),
+    expires_at: timestamp('expires_at'),
+    created_at: timestamp('created_at').defaultNow(),
+    updated_at: timestamp('updated_at').defaultNow(),
   },
 
-  (table) => [index('identifier_idx').on(table.identifier).using('btree')]
+  (table) => [index('identifier_idx').on(table.identifier)]
 )

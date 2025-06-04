@@ -1,6 +1,8 @@
-import { index, mysqlTable, timestamp, varchar } from 'drizzle-orm/mysql-core'
+import { index, pgTable, timestamp, varchar } from 'drizzle-orm/pg-core'
 
-export const sessionsTable = mysqlTable(
+import { generateId } from '../../server/utils/coreHelper'
+
+export const sessionsTable = pgTable(
   'sessions',
   {
     id: varchar('id', { length: 32 })
@@ -12,8 +14,8 @@ export const sessionsTable = mysqlTable(
     user_id: varchar('user_id', { length: 32 }).notNull(),
     expires_at: timestamp('expires_at').notNull(),
     created_at: timestamp('created_at').notNull().defaultNow(),
-    updated_at: timestamp('updated_at').notNull().defaultNow().onUpdateNow(),
+    updated_at: timestamp('updated_at').notNull().defaultNow(),
     impersonatedBy: varchar('impersonatedBy', { length: 32 }),
   },
-  (table) => [index('user_id_idx').on(table.user_id), index('token_idx').on(table.token)]
+  (table) => [index('sessions_user_id_idx').on(table.user_id), index('sessions_token_idx').on(table.token)]
 )
